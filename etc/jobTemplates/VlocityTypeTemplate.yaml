@@ -1,0 +1,51 @@
+
+# The Job defines all the different data for each supported task
+# the supported tasks are:
+# packDeploy: Deploy all contents of folder in expansionPath
+# packImport: Import contents of file in buildFile
+# packExport: Export from all queries and manifest and expand at expansionPath
+# packBuildFile: Build the buildFile from the expansionPath data
+# packExpandFile: Create the contents of folders in expansionPath from the buildFile
+projectPath: %feature%
+expansionPath: vlocity/ 
+compileOnBuild: false # Compiled files will not be generated as part of this Export
+# You can also run Anonymous Apex before and After a Job by job type.
+# Available types are Import, Export, Deploy BuildFile, ExpandFile
+# Apex files live in vloc_release/apex or in your projectPath
+# You can include multiple Apex files with "//include FileName.cls;" in you .cls file
+preStepApex:
+    Deploy: DeactivateTemplatesAndLayouts.cls
+# Data for Job can be Specified through either queries OR manfifest not both
+queries: # Array of Queries to get Data for Job by DataPackType (Should be 4 spaces from left)
+    - VlocityDataPackType: %vlocityType%
+      query: %query%
+
+delete: true # Delete the VlocityDataPack__c file on finish
+continueAfterError: true
+maximumDeployCount: 1
+ignoreAllErrors: true
+activate: true
+
+manifestOnly: false # If true, an Export job will only save items specifically listed in the manifest
+manifest: # Object defining Type and Export Data - Can be String or Object
+#  VlocityUITemplate:
+#    - cellcom-variables
+#  VlocityUILayout: # VlocityDataPackType
+#    - B2B-Account-console-sidebar
+#    - B2BActionsToolBar  
+#    - B2BAssetsLayout 
+#    - B2BRecommendations 
+#    - B2BMainPreview
+#    - B2BBillingDetails
+
+#    - variables
+#    - mixin
+#    - B2B-recommendations-canvas 
+#    - assets-sections-canvas 
+#    - console-sidebar-cellcom
+#    - card-B2B-billing-details
+#    - assets-sections-canvas
+#    - card-active-aggregator
+#    - card-actions--legacy-links
+#    - card-canvas-1x-slds-legacy-links
+#    - sidebar-reciprocity-Indicator
