@@ -51,10 +51,6 @@ force-dev-tool remote add sita <username> <password + security token> https://te
 -----------
 
 ```java
-get_vlocity_components.sh Item-02704 | retrieve_vlocity_metadata.py -d -o config/deploymentsVlocity/CIT-Release-13
-```
-
-```java
 get_sf_components.sh Item-03795 | create_package_xml.sh -o packages/Item-03795
 get_and_deploy_sf_components.sh -t deva,cita,citc Item-03795
 get_vlocity_components.sh Item-02704 | retrieve_vlocity_metadata.py -d
