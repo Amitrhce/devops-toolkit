@@ -1,0 +1,40 @@
+{
+   "remove-element-matching": [
+      {
+         "type": "profiles",
+         "name": "*",
+         "userPermissions": {
+            "matching": "<name>AssignUserToSkill</name>"
+         }
+      }
+   ],
+   "replace-tag-value": [
+       {
+         "type": "classes",
+         "name": "*",
+         "tag": "minorNumber",
+         "value": ".*",
+         "replace-value": "96"
+       },
+       {
+         "type": "pages",
+         "name": "*",
+         "tag": "minorNumber",
+         "value": ".*",
+         "replace-value": "96"
+       },
+       {
+         "type": "components",
+         "name": "*",
+         "tag": "minorNumber",
+         "value": ".*",
+         "replace-value": "96"
+       }
+   ],
+   "remove-element":[
+       {
+         "type": "connectedApps",
+         "name": "consumerKey"
+       }
+   ]
+}
