@@ -63,7 +63,7 @@ check_force_dev_tool_installed(){
 }
 
 check_metadata_xml_tool_installed(){
-    path=`command -v force-dev-tool`
+    path=`command -v metadata-xml-tool`
     if [ -z "$path" ]; then
        print_install_metadata_xml_tool;
        exit 1;
