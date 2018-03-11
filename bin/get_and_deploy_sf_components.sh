@@ -46,6 +46,12 @@ print_install_force_dev_tool(){
     echo "https://github.com/amtrack/force-dev-tool"
 }
 
+print_install_metadata_xml_tool(){
+    print_error "Install metadata-xml-tool first"
+    echo "For more information look at"
+    echo "https://github.com/amtrack/metadata-xml-tool"
+}
+
 check_force_dev_tool_installed(){
     path=`command -v force-dev-tool`
     if [ -z "$path" ]; then
@@ -53,6 +59,16 @@ check_force_dev_tool_installed(){
        exit 1;
     else
        log "force-dev-tool found - $path"
+    fi
+}
+
+check_metadata_xml_tool_installed(){
+    path=`command -v force-dev-tool`
+    if [ -z "$path" ]; then
+       print_install_metadata_xml_tool;
+       exit 1;
+    else
+       log "metadata-xml-tool found - $path"
     fi
 }
 
@@ -85,7 +101,7 @@ filter_output_csv(){
    fi
 }
 
-prepare_item_list(){
+prepare_component_list(){
    tempArray=($@)
    # for each item
    for((i=0; i<${#tempArray[@]}; ++i)); do
@@ -97,6 +113,7 @@ prepare_item_list(){
    done
    echo "$tempComponentList"
 }
+
 remove_xml_elements(){
    backlogItem=$1
    # for each item
@@ -156,12 +173,15 @@ fi
 # check whether force-dev-tool is installed
 check_force_dev_tool_installed;
 
+# check whether metadata-xml-tool is installed
+check_metadata_xml_tool_installed;
+
 # check whether .orgs.json and environment exists - if not return an error with instructions what to do
 check_environment_exists "$sourceEnv";
 
 if [ ! -z "$outputFolder"  ];then
   itemList=`prepare_component_list "${items[@]}"`;
-  components=`get_backlog_items_components.sh "${itemList}"`
+  components=`get_sf_components.sh "${itemList}"`
   filter="Dev01"
   dev01_components=`filter_output_csv "$components" "$filter"`
   dev01_components_count=`echo "$dev01_components" | wc -l`
@@ -205,7 +225,7 @@ if [ ! -z "$outputFolder"  ];then
       log "force-dev-tool deploy -d packages/${outputFolder}_dev02 [TARGET]"
     fi
   else
-    echo "$components" | create_package_xml.sh -o "packages/${itemList}/package.xml"
+    echo "$components" | create_package_xml.sh -o "packages/${outputFolder}/package.xml"
 
     if [ "$dev01_components_count" -gt 1 ];then
       log "retrieveing ${itemList} components from dev01"
@@ -248,7 +268,7 @@ if [ ! -z "$outputFolder"  ];then
 else
   # for each item
   for((i=0; i<${#items[@]}; ++i)); do
-    components=`get_backlog_items_components.sh "${items[i]}"`
+    components=`get_sf_components.sh "${items[i]}"`
     filter="Dev01"
     dev01_components=`filter_output_csv "$components" "$filter"`
     dev01_components_count=`echo "$dev01_components" | wc -l`
