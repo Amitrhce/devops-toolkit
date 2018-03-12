@@ -15,18 +15,22 @@ import os
 import commands
 import re
 import sys
+from distutils.spawn import find_executable
 
-# default values
+# default global values
 this = sys.modules[__name__]
 DEBUG = False
+IGNORE_ERRORS = False
+
 ORGS_JSON_PATH = '/Users/stepanruzicka/Workspace/projects/Three/deployment/config'
 ORGS_JSON_FILENAME = '.orgs.json'
 CONFIG = 'etc'
 TEMPLATES_FOLDER = 'jobTemplates'
 VLOCITY_YAML_TEMPLATE = 'VlocityTypeTemplate.yaml'
 TEMP = 'temp'
-DEPLOYMENT_PATH = 'config'
-DEPLOYMENT_FOLDER = 'deploymentsVlocity'
+#DEPLOYMENT_PATH = 'config'
+DEPLOYMENT_PATH = ''
+DEPLOYMENT_FOLDER = 'packages'
 #SCRIPT_FOLDER_PATH = os.path.dirname(os.path.abspath(__file__))
 SCRIPT_FOLDER_PATH = os.path.dirname(os.path.realpath(__file__))
 CURRENT_WORKING_PATH = os.getcwd()
@@ -128,7 +132,7 @@ def get_remote_org_configuration(org_json_file_path):
          raise SystemExit(ORGS_JSON_FILENAME + ' not found!')
    return remotes
 
-def get_vlocity_yaml_file(vlocity_template_path, other_conditions, object_map_by_vlocity_type, row):
+def get_vlocity_yaml_file(vlocity_template_path, other_conditions, object_map_by_vlocity_type, row, output_folder):
    vlocity_yaml = ''
    template_file = Path(vlocity_template_path)
    if(not template_file.is_file()):
@@ -139,7 +143,8 @@ def get_vlocity_yaml_file(vlocity_template_path, other_conditions, object_map_by
       with open(vlocity_template_path, 'r') as vlocity_template:
          query = QUERY_TEMPLATE_STRING.replace('%sobject%', object_map_by_vlocity_type[row['Vlocity_Type__c']]).replace('%name%', row['Name']).replace('%otherConditions%', other_conditions)
          #vlocity_yaml = vlocity_template.read().replace('%vlocityType%', row['Vlocity_Type__c']).replace('%Name%', row['Name']).replace('%otherConditions%', other_conditions).replace('%sobject%', object_map_by_vlocity_type[row['Vlocity_Type__c']]).replace('%feature%', DEPLOYMENT_PATH + '/' + DEPLOYMENT_FOLDER + '/' + row['Backlog_Item__r.Name'])
-         vlocity_yaml = vlocity_template.read().replace('%vlocityType%', row['Vlocity_Type__c']).replace('%feature%', DEPLOYMENT_PATH + '/' + DEPLOYMENT_FOLDER + '/' + row['Backlog_Item__r.Name']).replace('%query%', query)
+         
+         vlocity_yaml = vlocity_template.read().replace('%vlocityType%', row['Vlocity_Type__c']).replace('%feature%', output_folder).replace('%query%', query)
          print_info('Query: ' + color_string(query.replace('%vlocity_namespace%', VLOCITY_NAMESPACE), Color.GREEN))
 
    return vlocity_yaml
@@ -159,9 +164,9 @@ def write_temporary_yaml_file(vlocity_yaml_file_path, vlocity_yaml_file_string):
    with open(vlocity_yaml_file_path, "w") as vlocity_yaml_file:
       vlocity_yaml_file.write("%s" % vlocity_yaml_file_string)
 
-def retrieve_vlocity_metadata(vlocity_yaml_file_path, remotes, environment, row, retrieved_components):
+def retrieve_vlocity_metadata(vlocity_yaml_file_path, remotes, environment, row, retrieved_components, output_folder):
    remote = get_remote(environment, remotes)
-   print_info('Destination folder ' + color_string(DEPLOYMENT_PATH + '/' + DEPLOYMENT_FOLDER + '/' + row['Backlog_Item__r.Name'], Color.BLUE))
+   print_info('Destination folder ' + color_string(output_folder, Color.BLUE))
    retrieve_cmd = 'vlocity packExport -job="' + vlocity_yaml_file_path + '" -sf.username="'  + remote['username'] + '" -sf.password="' + remote['password'] + '" -sf.loginUrl="' + remote['serverUrl'] + '"'
    print_info('Running command: ' + color_string(retrieve_cmd, Color.BLUE))
 
@@ -180,22 +185,58 @@ def retrieve_vlocity_metadata(vlocity_yaml_file_path, remotes, environment, row,
          result_dict[result_array[0].strip()] = result_array[1].strip()
       else:
          result_dict[result_array[0].strip()] = ''
+   
+   # default values
+   retrieval_status = 'Success'
+   retrieval_details = ''
+   retrieval_error_message = ''
+
+   if('Query' in result_dict):
+      retrieval_details = result_dict['Query']
+   else:
+      retrieval_details = ''
 
    # check errors
-   if(result_dict['Errors'] != '0'):
-      raise SystemExit(color_string('Errors for item: ' + row['Backlog_Item__r.Name'] + '\n' + 'Query: ' + result_dict['Query'], Color.RED))
-   elif(result_dict['Records'] == '0'):
-      raise SystemExit(color_string('Component for item: ' + row['Backlog_Item__r.Name'] + ' doesn\'t exist!\n' + 'Query: ' + result_dict['Query'], Color.RED))
-   else:
-      if(row['Backlog_Item__r.Name'] in retrieved_components):
-         if(row['Vlocity_Type__c'] in retrieved_components[row['Backlog_Item__r.Name']]):
-            retrieved_components[row['Backlog_Item__r.Name']][row['Vlocity_Type__c']].append({'Name': row['Name'], 'Type': row['OmniScript_Type__c'], 'SubType': row['OmniScript_SubType__c'], 'Version': row['Version__c'], 'Item': row['Backlog_Item__r.Name']})
-         else:
-            retrieved_components[row['Backlog_Item__r.Name']][row['Vlocity_Type__c']] = [{'Name': row['Name'], 'Type': row['OmniScript_Type__c'], 'SubType': row['OmniScript_SubType__c'], 'Version': row['Version__c'],'Item': row['Backlog_Item__r.Name']}]
+   if('Errors' in result_dict and result_dict['Errors'] != '0'):
+      retrieval_status = 'Failed'
+      retrieval_error_message = 'Errors for item: ' + row['Backlog_Item__r.Name'] + '\n' + 'Query: ' + result_dict['Query']
+      if(IGNORE_ERRORS):
+         print_info(color_string('Errors for item: ' + row['Backlog_Item__r.Name'] + '\n' + 'Query: ' + result_dict['Query'], Color.RED))
       else:
-         retrieved_components[row['Backlog_Item__r.Name']] = {row['Vlocity_Type__c']: [{'Name': row['Name'], 'Type': row['OmniScript_Type__c'], 'SubType': row['OmniScript_SubType__c'], 'Version': row['Version__c'],'Item': row['Backlog_Item__r.Name']}]}
+         raise SystemExit(color_string('Errors for item: ' + row['Backlog_Item__r.Name'] + '\n' + 'Query: ' + result_dict['Query'], Color.RED))
+   elif(('Records' in result_dict and result_dict['Records'] == '0') or ('Query Total' in result_dict and result_dict['Query Total'] == '0')):
+      retrieval_status = 'Failed'
+      retrieval_error_message = 'Component for item: ' + row['Backlog_Item__r.Name'] + ' doesn\'t exist!\n' + 'Query: ' + result_dict['Query']
+      if(IGNORE_ERRORS):
+         print_info(color_string('Component for item: ' + row['Backlog_Item__r.Name'] + ' doesn\'t exist!\n' + 'Query: ' + result_dict['Query'], Color.RED))
+      else:
+         raise SystemExit(color_string('Component for item: ' + row['Backlog_Item__r.Name'] + ' doesn\'t exist!\n' + 'Query: ' + result_dict['Query'], Color.RED))
+  
+   # if successfully retrieved add component to retrieved_components dictionary
+   if(row['Backlog_Item__r.Name'] in retrieved_components):
+      if('Components' in retrieved_components[row['Backlog_Item__r.Name']] and row['Vlocity_Type__c'] in retrieved_components[row['Backlog_Item__r.Name']]['Components']):
+         retrieved_components[row['Backlog_Item__r.Name']]['Components'][row['Vlocity_Type__c']].append({'Name': row['Name'], 'Type': row['OmniScript_Type__c'], 'SubType': row['OmniScript_SubType__c'], 'Version': row['Version__c'], 'Item': row['Backlog_Item__r.Name'], 'Retrieval_Details': retrieval_details, 'Output_Folder': output_folder})
+      else:
+         retrieved_components[row['Backlog_Item__r.Name']]['Components'][row['Vlocity_Type__c']] = [{'Name': row['Name'], 'Type': row['OmniScript_Type__c'], 'SubType': row['OmniScript_SubType__c'], 'Version': row['Version__c'],'Item': row['Backlog_Item__r.Name'], 'Retrieval_Details': retrieval_details, 'Output_Folder': output_folder}]
+   else:
+      retrieved_components[row['Backlog_Item__r.Name']] = {'Components': {row['Vlocity_Type__c']: [{'Name': row['Name'], 'Type': row['OmniScript_Type__c'], 'SubType': row['OmniScript_SubType__c'], 'Version': row['Version__c'],'Item': row['Backlog_Item__r.Name'], 'Retrieval_Details': retrieval_details}]}}
 
-      print_info('Successfully retrieved')
+   # update retrieval status
+   if('Retrieval_Status' not in retrieved_components[row['Backlog_Item__r.Name']]):
+      retrieved_components[row['Backlog_Item__r.Name']]['Retrieval_Status'] = retrieval_status
+      retrieved_components[row['Backlog_Item__r.Name']]['Retrieval_Error_Message'] = retrieval_error_message
+   elif(retrieved_components[row['Backlog_Item__r.Name']]['Retrieval_Status'] != 'Failed' and retrieval_status == 'Failed'):
+      retrieved_components[row['Backlog_Item__r.Name']]['Retrieval_Status'] = retrieval_status
+      retrieved_components[row['Backlog_Item__r.Name']]['Retrieval_Details'] = retrieval_error_message
+   else:
+      retrieved_components[row['Backlog_Item__r.Name']]['Retrieval_Status'] = 'Success'
+      retrieved_components[row['Backlog_Item__r.Name']]['Retrieval_Details'] = ''
+
+   # update output folder
+   if('Output_Folder' not in retrieved_components[row['Backlog_Item__r.Name']]):
+      retrieved_components[row['Backlog_Item__r.Name']]['Output_Folder'] = output_folder
+
+   print_info('Successfully retrieved')
    
    #subprocess.check_output(retrieve_cmd, shell=True)
 
@@ -228,17 +269,55 @@ def print_conflicted_omniscripts(processed_omniscripts):
                message = message + color_string(item['Item'] + ', ' + item['Type'] + ', ' + item['SubType'] + ', ' + item['Version'], Color.RED)
    raise SystemExit(message)
 
+def is_tool(name):
+    return find_executable(name) is not None
+
+def write_csv_output(retrieved_components):
+   # write csv output if debug mode is not turned on
+   if(not this.DEBUG):
+      #fieldnames_output = list(csv_reader.fieldnames)
+      #fieldnames_output.append("Retrieval_Status")
+      fieldnames_output = {'Backlog_Item__r.Name', 'Retrieval_Status', 'Retrieval_Details', 'Package_Path'}
+      csv_writer = csv.DictWriter(sys.stdout, fieldnames=fieldnames_output, quoting=csv.QUOTE_ALL)
+      csv_writer.writeheader()   
+
+   #print(retrieved_components)
+   for item in retrieved_components:
+      # write csv output if debug mode is not turned on
+      if(not this.DEBUG):
+         row_out = {'Backlog_Item__r.Name': item, 'Retrieval_Status': retrieved_components[item]['Retrieval_Status'], 'Retrieval_Details': retrieved_components[item]['Retrieval_Error_Message'], 'Package_Path': retrieved_components[item]['Output_Folder']}
+         csv_writer.writerow(row_out)
+      if(retrieved_components[item]['Retrieval_Status'] != 'Success'):
+          print_info('For item ' + color_string(item, Color.BLUE) + ' retrieval failed! Error message is: ' + retrieved_components[item]['Retrieval_Error_Message'])
+      elif(retrieved_components[item]['Retrieval_Status'] == 'Success' and  'Components' in retrieved_components[item]):   
+         print_info('For item ' + color_string(item, Color.BLUE) + ' retrieved components are:')
+         for vloc_type in retrieved_components[item]['Components']:
+            print_info('\t' + vloc_type + ':')
+            for vloc_component in retrieved_components[item]['Components'][vloc_type]:
+               print_info('\t\t' + vloc_component['Name'])
+      else:
+         print_info('For item ' + color_string(item, Color.BLUE) + ' no components retrieved')
+  
 def main():
    parser = argparse.ArgumentParser(description='Exports vlocity components from a source SF environment.\n' +
                                                 'Example:\n' +
                                                 '\tretrieve_vlocity_components.py -d',
 						formatter_class=RawTextHelpFormatter)
    parser.add_argument(
-        "-d", "--debug", dest="DEBUG",
+        "-d", "--debug", dest="debug",
         help="Debug mode", action="store_true")
 
+   parser.add_argument(
+        "--ignore-errors", dest="ignore_errors",
+        help="Will keep on processing despite errors", action="store_true")
+
+   parser.add_argument(
+        "-o", "--output-folder", dest="output",
+        help="Output folder")
+
    args = parser.parse_args()
-   this.DEBUG = args.DEBUG
+   this.DEBUG = args.debug
+   this.IGNORE_ERRORS = args.ignore_errors
 
    # remotes
    orgs_json_file_path = Path(ORGS_JSON_PATH + '/' + ORGS_JSON_FILENAME)
@@ -249,18 +328,31 @@ def main():
    object_map_by_vlocity_type = load_vlocity_object_map(vlocity_object_map_path)
 
    # TODO check whether is force-dev-tool installed
+   if(not is_tool("force-dev-tool")):
+      raise SystemExit('Please install force-dev-tool first!\nFor more information look at\n"https://github.com/amtrack/force-dev-tool"')
 
    # loop through input (stdin)
    counter = 0
    #csv_reader = csv.DictReader(fileinput.input(mode='rb'), delimiter=',')
    csv_reader = csv.DictReader(iter(sys.stdin.readline, ''))
-   fieldnames = {"Environment__c","Backlog_Item__r.Id","Backlog_Item__r.Name","Backlog_Item__r.Vlocity_Deployment_Status__c","Name","Vlocity_Type__c","OmniScript_Type__c","OmniScript_SubType__c","Version__c","LastModifiedBy.Name"}
-   csv_writer = csv.DictWriter(sys.stdout, fieldnames=fieldnames)
-   csv_writer.writeheader()   
 
    retrieved_components = {}
    for row in csv_reader:
       counter = counter + 1
+      
+      # print new line
+      if(counter > 1):
+         print_info('\n')
+      output_folder = ''
+      # set-up ouput folder
+      if(not args.output):
+         if(DEPLOYMENT_PATH):
+            output_folder = output_folder + DEPLOYMENT_PATH + '/'
+         if(DEPLOYMENT_FOLDER):
+            output_folder = output_folder + DEPLOYMENT_FOLDER + '/'
+         output_folder = output_folder + row['Backlog_Item__r.Name']
+      else:
+         output_folder = args.output
       print_info(color_string('Component #' + str(counter) + ' (' + row['Backlog_Item__r.Name'] + ')', Color.GREEN))
       #print(row)
       print_info('Exporting ' + color_string(row['Vlocity_Type__c'], Color.GREEN) + ': ' + color_string(row['Name'], Color.YELLOW) + ' from ' + color_string(row['Environment__c'], Color.MAGENTA))
@@ -269,18 +361,20 @@ def main():
 
       # get_vlocity_yaml_file
       vlocity_template_path = SCRIPT_FOLDER_PATH + '/' + CONFIG + '/' + TEMPLATES_FOLDER + '/' + VLOCITY_YAML_TEMPLATE
-      vlocity_yaml_file_string = get_vlocity_yaml_file(vlocity_template_path, other_conditions, object_map_by_vlocity_type, row)
+      vlocity_yaml_file_string = get_vlocity_yaml_file(vlocity_template_path, other_conditions, object_map_by_vlocity_type, row, output_folder)
       
       # write temporary yaml file
       vlocity_yaml_file_path = TEMP + '/' + row['Backlog_Item__r.Name'] + '.yaml'
       write_temporary_yaml_file(vlocity_yaml_file_path, vlocity_yaml_file_string)
 
       # retrieve vlocity metadata for the current row
-      retrieve_vlocity_metadata(vlocity_yaml_file_path, remotes, row['Environment__c'], row, retrieved_components)
+      retrieve_vlocity_metadata(vlocity_yaml_file_path, remotes, row['Environment__c'], row, retrieved_components, output_folder)
       
    processed_omniscripts = {}
    if(check_omniscript_conflicts(retrieved_components, processed_omniscripts)):
       print_conflicted_omniscripts(processed_omniscripts)
-      
+
+   write_csv_output(retrieved_components)
+ 
 if __name__ == "__main__":
    main()
