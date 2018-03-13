@@ -21,6 +21,7 @@ from distutils.spawn import find_executable
 this = sys.modules[__name__]
 DEBUG = False
 IGNORE_ERRORS = False
+DEBUG_LEVEL = 1
 
 ORGS_JSON_PATH = '/Users/stepanruzicka/Workspace/projects/Three/deployment/config'
 ORGS_JSON_FILENAME = '.orgs.json'
@@ -147,6 +148,8 @@ def deploy_vlocity_metadata(row, target_env, remotes, deployed_components):
       print_info('Skipping ' + color_string(item, Color.BLUE) + ' as it wasn\'t successfully retrieved (' + row['Retrieval_Details'] + ')')
       skipped = True
 
+   if(this.DEBUG and this.DEBUG_LEVEL == 2):
+      print_info(result)      
 
    # remove formatting from the result
    ansi_escape = re.compile(r'[\s]?\x1b\[[0-?]*[ -/]*[@-~]')
@@ -164,7 +167,7 @@ def deploy_vlocity_metadata(row, target_env, remotes, deployed_components):
       else:
          result_dict[result_array[0].strip()] = ''
   
-   print(result_dict) 
+   #print(result_dict) 
 
    # initialize deployment_components with values from retrieval
    deployed_components[row['Backlog_Item__r.Name']] = row.copy()
@@ -180,9 +183,10 @@ def deploy_vlocity_metadata(row, target_env, remotes, deployed_components):
    deployment_error_message = ''
   
    # check errors
-   if('Errors' in result_dict and result_dict['Errors'] != '0'):
+   if(get_error(result_dict)):
       deployment_status = 'Failed'
-      deployment_error_message = 'Errors for item: ' + row['Backlog_Item__r.Name'] + ' (' + deployment_details + ')'
+      deployment_error_message = 'Errors for item: ' + row['Backlog_Item__r.Name'] + ' (' + deployment_detials + ')'
+      deployment_error_message = deployment_error_message + '\n' + get_error_message(result_dict)
       if(IGNORE_ERRORS):
          print_info(color_string(deployment_error_message, Color.RED))
       else:
@@ -199,11 +203,40 @@ def deploy_vlocity_metadata(row, target_env, remotes, deployed_components):
    deployed_components[row['Backlog_Item__r.Name']]['Deployment_Details'] = deployment_details
 
    if(deployment_status == 'Success'):
+      deployed_components[row['Backlog_Item__r.Name']]['Components'] = get_successfully_deployed_components(result_dict)
       print_info('Successfully deployed')
    else:
       print_info(deployment_status)
    
    #subprocess.check_output(retrieve_cmd, shell=True)
+
+def get_error(result):
+   if "Errors" in result:
+      for error in result['Errors']:
+         if(error != '0'):
+            return True
+   return False
+
+def get_error_message(result):
+   error_message = ''
+   error_message_counter = 0
+   for key in result:
+      if key != "Errors" and ("Error" in key or "error" in key):
+         error_message_counter = error_message_counter + 1
+         if(error_message_counter <= 0):
+            error_message = error_message + key + ': ' + result[key]
+         else:
+            error_message = error_message + '\n' + key + ': ' + result[key]
+
+def get_successfully_deployed_components(result):
+   #deployed_components = []
+   #for key in result:
+   #   if key == "Deploy Success":
+   #      deployed_components.append(result['Deploy Success'])
+   if 'Deploy Success' in result:
+      return result['Deploy Success']
+   else:
+      return []
 
 def is_tool(name):
     return find_executable(name) is not None
@@ -225,8 +258,11 @@ def write_csv_output(deployed_components):
          row_out = {'Backlog_Item__r.Name': item, 'Retrieval_Status': deployed_components[item]['Retrieval_Status'], 'Retrieval_Error_Message': deployed_components[item]['Retrieval_Error_Message'], 'Retrieval_Error_Message': deployed_components[item]['Retrieval_Details'], 'Deployment_Status': deployed_components[item]['Deployment_Status'], 'Deployment_Details': deployed_components[item]['Deployment_Error_Message'], 'Job_File_Path': deployed_components[item]['Job_File_Path'], 'Output_Folder': deployed_components[item]['Output_Folder']}
          csv_writer.writerow(row_out)
       if(deployed_components[item]['Deployment_Status'] != 'Success'):
-          print_info('For item ' + color_string(item, Color.BLUE) + ' deployment failed! Error message is: ' + deployed_components[item]['Deployment_Error_Message'])
- 
+         print_info('For item ' + color_string(item, Color.BLUE) + ' deployment failed! Error message is: ' + deployed_components[item]['Deployment_Error_Message'])
+      elif 'Components' in deployed_components[item]:
+         print_info('For item ' + color_string(item, Color.BLUE) + ' deployed components are:')
+         for component in deployed_components[item]['Components']:         
+            print_info('\t' + component)
 def main():
    parser = argparse.ArgumentParser(description='Exports vlocity components from a source SF environment.\n' +
                                                 'Example:\n' +
@@ -244,9 +280,15 @@ def main():
         "-t", "--target", dest="environments",type=str,required=True,
         help="Destination environments", )
 
+   parser.add_argument(
+        "--debug-level", dest="debug_level",type=int,
+        help="Debug level from {1, 2}")
+
    args = parser.parse_args()
    this.DEBUG = args.debug
    this.IGNORE_ERRORS = args.ignore_errors
+   if(args.debug_level == 2):
+      this.DEBUG_LEVEL = 2
    environments = args.environments.split(',')
 
    # remotes
