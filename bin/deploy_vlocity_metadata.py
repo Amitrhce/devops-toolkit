@@ -299,11 +299,11 @@ def main():
 
    # TODO check whether is force-dev-tool installed
    #if(platform.system() != 'Windows' and not is_tool("force-dev-tool")):
-   if(not is_tool("force-dev-tool")):
+   if(platform.system() != 'Windows' and not is_tool("force-dev-tool")):
       raise SystemExit('Please install force-dev-tool first!\nFor more information look at\n"https://github.com/amtrack/force-dev-tool"')
 
    # TODO check whether is force-dev-tool installed
-   if(not is_tool("vlocity")):
+   if(platform.system() != 'Windows' and not is_tool("vlocity")):
       raise SystemExit('Please install vlocity_build first!\nFor more information look at\n"https://github.com/vlocityinc/vlocity_build"')
 
    # loop through input (stdin)
