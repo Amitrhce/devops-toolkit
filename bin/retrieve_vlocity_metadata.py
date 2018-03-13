@@ -22,6 +22,7 @@ import platform
 this = sys.modules[__name__]
 DEBUG = False
 IGNORE_ERRORS = False
+DEBUG_LEVEL = 1
 
 ORGS_JSON_PATH = 'config'
 ORGS_JSON_FILENAME = '.orgs.json'
@@ -178,6 +179,9 @@ def retrieve_vlocity_metadata(vlocity_yaml_file_path, remotes, environment, row,
    #result = os.system(retrieve_cmd)
    result = commands.getoutput(retrieve_cmd)
 
+   if(this.DEBUG and this.DEBUG_LEVEL == 2):
+      print_info(result)   
+
    # remove formatting from the result
    ansi_escape = re.compile(r'[\s]?\x1b\[[0-?]*[ -/]*[@-~]')
    result = ansi_escape.sub('', result)
@@ -331,9 +335,15 @@ def main():
         "-o", "--output-folder", dest="output",
         help="Output folder")
 
+   parser.add_argument(
+        "--debug-level", dest="debug_level",type=int,
+        help="Debug level from {1, 2}")
+
    args = parser.parse_args()
    this.DEBUG = args.debug
    this.IGNORE_ERRORS = args.ignore_errors
+   if(args.debug_level == 2):
+      this.DEBUG_LEVEL = 2
 
    # remotes
    orgs_json_file_path = Path(ORGS_JSON_PATH + '/' + ORGS_JSON_FILENAME)
