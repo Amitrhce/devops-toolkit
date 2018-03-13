@@ -141,7 +141,8 @@ def deploy_vlocity_metadata(row, target_env, remotes, deployed_components):
       if('Job_File_Path' in row and os.path.exists(row['Job_File_Path'])):
          deploy_cmd = 'vlocity packDeploy -job="' + row['Job_File_Path'] + '" -sf.username="'  + remote['username'] + '" -sf.password="' + remote['password'] + '" -sf.loginUrl="' + remote['serverUrl'] + '"'
          print_info('Running command: ' + color_string(deploy_cmd, Color.BLUE))
-         result = commands.getoutput(deploy_cmd)
+         #result = commands.getoutput(deploy_cmd)
+         result = subprocess.check_output(deploy_cmd, shell=True)
          #print(commands.getoutput(deploy_cmd))
       else:
          print_info(color_string('Package path not specified or doesn\'t exist!', Color.RED))
@@ -297,11 +298,12 @@ def main():
    remotes = get_remote_org_configuration(orgs_json_file_path)
 
    # TODO check whether is force-dev-tool installed
-   if(platform.system() != 'Windows' and is_tool("force-dev-tool")):
+   #if(platform.system() != 'Windows' and not is_tool("force-dev-tool")):
+   if(not is_tool("force-dev-tool")):
       raise SystemExit('Please install force-dev-tool first!\nFor more information look at\n"https://github.com/amtrack/force-dev-tool"')
 
    # TODO check whether is force-dev-tool installed
-   if(platform.system() != 'Windows' and not is_tool("vlocity")):
+   if(not is_tool("vlocity")):
       raise SystemExit('Please install vlocity_build first!\nFor more information look at\n"https://github.com/vlocityinc/vlocity_build"')
 
    # loop through input (stdin)

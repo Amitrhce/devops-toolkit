@@ -177,7 +177,8 @@ def retrieve_vlocity_metadata(vlocity_yaml_file_path, remotes, environment, row,
    print_info('Running command: ' + color_string(retrieve_cmd, Color.BLUE))
 
    #result = os.system(retrieve_cmd)
-   result = commands.getoutput(retrieve_cmd)
+   # THIS DOESN'T WORK ON WINDOWS! result = commands.getoutput(retrieve_cmd)
+   result = subprocess.check_output(retrieve_cmd, shell=True)
 
    if(this.DEBUG and this.DEBUG_LEVEL == 2):
       print_info(result)   
@@ -354,11 +355,11 @@ def main():
    object_map_by_vlocity_type = load_vlocity_object_map(vlocity_object_map_path)
 
    # check whether is force-dev-tool installed
-   if(platform.system() != 'Windows' and not is_tool("force-dev-tool")):
+   if(not is_tool("force-dev-tool")):
       raise SystemExit('Please install force-dev-tool first!\nFor more information look at\n"https://github.com/amtrack/force-dev-tool"')
 
    # check whether is force-dev-tool installed
-   if(platform.system() != 'Windows' and not is_tool("vlocity")):
+   if(not is_tool("vlocity")):
       raise SystemExit('Please install vlocity_build first!\nFor more information look at\n"https://github.com/vlocityinc/vlocity_build"')
 
    # loop through input (stdin)
