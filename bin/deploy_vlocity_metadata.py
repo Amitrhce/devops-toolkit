@@ -16,6 +16,7 @@ import commands
 import re
 import sys
 from distutils.spawn import find_executable
+import platform
 
 # default global values
 this = sys.modules[__name__]
@@ -296,11 +297,11 @@ def main():
    remotes = get_remote_org_configuration(orgs_json_file_path)
 
    # TODO check whether is force-dev-tool installed
-   if(not is_tool("force-dev-tool")):
+   if(platform.system() != 'Windows' and is_tool("force-dev-tool")):
       raise SystemExit('Please install force-dev-tool first!\nFor more information look at\n"https://github.com/amtrack/force-dev-tool"')
 
    # TODO check whether is force-dev-tool installed
-   if(not is_tool("vlocity")):
+   if(platform.system() != 'Windows' and not is_tool("vlocity")):
       raise SystemExit('Please install vlocity_build first!\nFor more information look at\n"https://github.com/vlocityinc/vlocity_build"')
 
    # loop through input (stdin)
