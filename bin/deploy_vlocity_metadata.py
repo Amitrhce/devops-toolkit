@@ -24,7 +24,7 @@ DEBUG = False
 IGNORE_ERRORS = False
 DEBUG_LEVEL = 1
 
-ORGS_JSON_PATH = '/Users/stepanruzicka/Workspace/projects/Three/deployment/config'
+ORGS_JSON_PATH = 'config'
 ORGS_JSON_FILENAME = '.orgs.json'
 CONFIG = 'etc'
 TEMPLATES_FOLDER = 'jobTemplates'
