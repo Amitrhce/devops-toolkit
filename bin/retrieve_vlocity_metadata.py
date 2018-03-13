@@ -16,6 +16,7 @@ import commands
 import re
 import sys
 from distutils.spawn import find_executable
+import platform
 
 # default global values
 this = sys.modules[__name__]
