@@ -178,7 +178,12 @@ def retrieve_vlocity_metadata(vlocity_yaml_file_path, remotes, environment, row,
 
    #result = os.system(retrieve_cmd)
    # THIS DOESN'T WORK ON WINDOWS! result = commands.getoutput(retrieve_cmd)
-   result = subprocess.check_output(retrieve_cmd, shell=True)
+   try:
+      result = subprocess.check_output(retrieve_cmd, shell=True)
+   except subprocess.CalledProcessError as e:
+      if(not INGORE_ERRORS)
+         raise RuntimeError("Retrieve failed (Command: '{}' returned error (code {}). If you want to ignore errors during the retrieval you can run it with --ignore-errors parameter. Please, also use -d parameter for more details".format(e.cmd, e.returncode))
+      result = e.output
 
    if(this.DEBUG and this.DEBUG_LEVEL == 2):
       print_info(result)   

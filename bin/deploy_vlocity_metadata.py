@@ -142,7 +142,13 @@ def deploy_vlocity_metadata(row, target_env, remotes, deployed_components):
          deploy_cmd = 'vlocity packDeploy -job="' + row['Job_File_Path'] + '" -sf.username="'  + remote['username'] + '" -sf.password="' + remote['password'] + '" -sf.loginUrl="' + remote['serverUrl'] + '"'
          print_info('Running command: ' + color_string(deploy_cmd, Color.BLUE))
          #result = commands.getoutput(deploy_cmd)
-         result = subprocess.check_output(deploy_cmd, shell=True)
+         try:
+            result = subprocess.check_output(deploy_cmd, shell=True)
+         except subprocess.CalledProcessError as e:
+            if(not INGORE_ERRORS)
+               raise RuntimeError("Deployment failed (Command: '{}' returned error (code {}). If you want to ignore errors during the deployment you can run it with --ignore-errors parameter. Please, also use -d parameter for more details".format(e.cmd, e.returncode))
+            result = e.output
+
          #print(commands.getoutput(deploy_cmd))
       else:
          print_info(color_string('Package path not specified or doesn\'t exist!', Color.RED))

@@ -214,10 +214,10 @@ if [ ! -z "$outputFolder"  ];then
 
       for((j=0; j<${#target_array[@]}; ++j)); do  
         log "deploying ${itemList} dev01 components to ${target_array[j]}"
-        force-dev-tool deploy -d "packages/${outputFolder}_dev01" "$target_array[j]"
+        force-dev-tool deploy -d "packages/${outputFolder}_dev01" "${target_array[j]}"
 
-        log "deploying ${itemList} dev02 components to $target_array[j]"
-        force-dev-tool deploy -d "packages/${outputFolder}_dev02" "$target_array[j]"
+        log "deploying ${itemList} dev02 components to ${target_array[j]}"
+        force-dev-tool deploy -d "packages/${outputFolder}_dev02" "${target_array[j]}"
       done
     else
       log "No target environment specified, nothing will be deployed, if you want to deploy the package later on, please run"
