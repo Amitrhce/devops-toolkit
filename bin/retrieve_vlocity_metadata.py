@@ -181,7 +181,7 @@ def retrieve_vlocity_metadata(vlocity_yaml_file_path, remotes, environment, row,
    try:
       result = subprocess.check_output(retrieve_cmd, shell=True)
    except subprocess.CalledProcessError as e:
-      if(not INGORE_ERRORS)
+      if(not IGNORE_ERRORS):
          raise RuntimeError("Retrieve failed (Command: '{}' returned error (code {}). If you want to ignore errors during the retrieval you can run it with --ignore-errors parameter. Please, also use -d parameter for more details".format(e.cmd, e.returncode))
       result = e.output
 
@@ -310,7 +310,7 @@ def write_csv_output(retrieved_components):
    for item in retrieved_components:
       # write csv output if debug mode is not turned on
       if(not this.DEBUG):
-         row_out = {'Backlog_Item__r.Name': item, 'Retrieval_Status': retrieved_components[item]['Retrieval_Status'], 'Retrieval_Error_Message': retrieved_components[item]['Retrieval_Error_Message'], 'Retrieval_Details': retrieved_components[item]['Retrieval_Details'], 'Job_File_Path': retrieved_components[item]['Job_File_Path']}
+         row_out = {'Backlog_Item__r.Name': item, 'Retrieval_Status': retrieved_components[item]['Retrieval_Status'], 'Retrieval_Error_Message': retrieved_components[item]['Retrieval_Error_Message'], 'Retrieval_Details': retrieved_components[item]['Retrieval_Details'], 'Job_File_Path': retrieved_components[item]['Job_File_Path'], 'Output_Folder': retrieved_components[item]['Output_Folder']}
          csv_writer.writerow(row_out)
       if(retrieved_components[item]['Retrieval_Status'] != 'Success'):
          print_info('For item ' + color_string(item, Color.BLUE) + ' retrieval failed! Error message is: ' + color_string(retrieved_components[item]['Retrieval_Error_Message'], Color.RED))
@@ -370,7 +370,9 @@ def main():
    # loop through input (stdin)
    counter = 0
    #csv_reader = csv.DictReader(fileinput.input(mode='rb'), delimiter=',')
-   csv_reader = csv.DictReader(iter(sys.stdin.readline, ''))
+   input_list = list(iter(sys.stdin.readline, ''))
+   #csv_reader = csv.DictReader(iter(sys.stdin.readline, ''))
+   csv_reader = csv.DictReader(input_list)
 
    retrieved_components = {}
    for row in csv_reader:
@@ -389,7 +391,7 @@ def main():
          output_folder = output_folder + row['Backlog_Item__r.Name']
       else:
          output_folder = args.output
-      print_info(color_string('Component #' + str(counter) + ' (' + row['Backlog_Item__r.Name'] + ')', Color.GREEN))
+      print_info(color_string('Retrieve - Component #' + str(counter) + ' (' + row['Backlog_Item__r.Name'] + ')', Color.GREEN))
       #print(row)
       print_info('Exporting ' + color_string(row['Vlocity_Type__c'], Color.GREEN) + ': ' + color_string(row['Name'], Color.YELLOW) + ' from ' + color_string(row['Environment__c'], Color.MAGENTA))
       # get other conditions

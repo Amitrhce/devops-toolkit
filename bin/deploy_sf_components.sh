@@ -152,23 +152,23 @@ check_environment_exists "$sourceEnv";
      
       if [ ! -z "$target" ];then
         for((j=0; j<${#target_array[@]}; ++j)); do
-          if [ -d "packages/${items[i]}" ]; then 
+          if [ -d "${items[i]}" ]; then 
              log "deploying ${items[i]} components to ${target_array[j]}"
-             force-dev-tool deploy -d "packages/${items[i]}" "${target_array[j]}"
+             force-dev-tool deploy -d "${items[i]}" "${target_array[j]}"
 
-          elif [ -d "packages/${items[i]}_dev01" ] && [ -d "packages/${items[i]}_dev02" ]; then
+          elif [ -d "${items[i]}_dev01" ] && [ -d "${items[i]}_dev02" ]; then
              log "deploying ${items[i]} dev01 components to ${target_array[j]}"
-             force-dev-tool deploy -d "packages/${items[i]}_dev01" "${target_array[j]}"
+             force-dev-tool deploy -d "${items[i]}_dev01" "${target_array[j]}"
 
              log "deploying ${items[i]} dev02 components to ${target_array[j]}"
-             force-dev-tool deploy -d "packages/${items[i]}_dev02" "${target_array[j]}"
+             force-dev-tool deploy -d "${items[i]}_dev02" "${target_array[j]}"
           else
-             print_error "Package "packages/${items[i]}" not found!" 
+             print_error "Package "${items[i]}" not found!" 
           fi
         done
       else
         log "No target environment specified, nothing will be deployed, if you want to deploy the package later on, please run"
-        log "force-dev-tool deploy -d packages/${items[i]}_dev01 [TARGET]"
-        log "force-dev-tool deploy -d packages/${items[i]}_dev02 [TARGET]"
+        log "force-dev-tool deploy -d ${items[i]}_dev01 [TARGET]"
+        log "force-dev-tool deploy -d ${items[i]}_dev02 [TARGET]"
       fi
  done

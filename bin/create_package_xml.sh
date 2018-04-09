@@ -227,7 +227,7 @@ processInput(){
 #============================================ MAIN =============================================#
 
 # print header
-printf -v fileProperties "%s" "<?xml version="1.0" encoding=\"UTF-8\"?>"
+printf -v fileProperties "%s" "<?xml version=\"1.0\" encoding=\"UTF-8\"?>"
 printf -v fileProperties "%s\n%s" "$fileProperties" "<Package xmlns=\"http://soap.sforce.com/2006/04/metadata\">"
 
 # print body

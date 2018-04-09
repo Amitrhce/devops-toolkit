@@ -18,6 +18,7 @@
 "ObjectClass","ObjectClass__c"
 "ObjectContextRule","ObjectRuleAssignment__c"
 "ObjectLayout","ObjectLayout__c"
+"IntegrationProcedure","OmniScript__c"
 "OmniScript","OmniScript__c"
 "OrchestrationDependencyDefinition","OrchestrationDependencyDefinition__c"
 "OrchestrationItemDefinition","OrchestrationItemDefinition__c"

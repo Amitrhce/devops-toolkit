@@ -120,6 +120,9 @@ remove_xml_elements(){
    if [ -d "$backlogItem" ]; then
       for x in $backlogItem/profiles/*;do metadata-xml-tool remove-element-matching userPermissions "<name>AssignUserToSkill</name>" "$x";done
       for x in $backlogItem/profiles/*;do metadata-xml-tool remove-element-matching userPermissions "<name>ChangeDashboardColors</name>" "$x";done
+      for x in $backlogItem/profiles/*;do metadata-xml-tool remove-element-matching userPermissions "<name>SubscribeToDashboards</name>" "$x";done
+      for x in $backlogItem/profiles/*;do metadata-xml-tool remove-element-matching userPermissions "<name>SendExternalEmailAvailable</name>" "$x";done
+      for x in $backlogItem/profiles/*;do metadata-xml-tool remove-element-matching userPermissions "<name>ManageSandboxes</name>" "$x";done
       for x in $backlogItem/classes/*-meta.xml;do metadata-xml-tool replace-tag-value minorNumber ".*" "96" $x;done
       for x in $backlogItem/pages/*-meta.xml;do metadata-xml-tool replace-tag-value minorNumber ".*" "96" $x;done
       for x in $backlogItem/components/*-meta.xml;do metadata-xml-tool replace-tag-value minorNumber ".*" "96" $x;done
@@ -195,17 +198,17 @@ if [ ! -z "$outputFolder"  ];then
 
   log "dev01 components count: $dev01_components_count"
   log "dev02 components count: $dev02_components_count"
-  if [ "$dev01_components_count" -gt 1 ] && [ "$dev02_components_count" -gt 1 ];then
+  if [ "$dev01_components_count" -gt 0 ] && [ "$dev02_components_count" -gt 0 ];then
     #retrieve
     log "retrieving ${itemList} components from dev01"
-    echo "$dev01_components" | create_package_xml.sh -o "packages/${outputFolder}_dev01/package.xml"
-    force-dev-tool retrieve -d "packages/${outputFolder}_dev01" dev01
-    remove_xml_elements "packages/${outputFolder}_dev01"
+    echo "$dev01_components" | create_package_xml.sh -o "${outputFolder}_dev01/src/package.xml"
+    force-dev-tool retrieve -d "${outputFolder}_dev01/src" dev01
+    remove_xml_elements "${outputFolder}_dev01/src"
 
     log "retrieving ${itemsList} components from dev02"
-    echo "$dev02_components" | create_package_xml.sh -o "packages/${outputFolder}_dev02/package.xml"
-    force-dev-tool retrieve -d "packages/${outputFolder}_dev02" dev02
-    remove_xml_elements "packages/${outputFolder}_dev02"
+    echo "$dev02_components" | create_package_xml.sh -o "${outputFolder}_dev02/src/package.xml"
+    force-dev-tool retrieve -d "${outputFolder}_dev02/src" dev02
+    remove_xml_elements "${outputFolder}_dev02/src"
 
     if [ ! -z "$target" ];then
       OFS=$IFS
@@ -214,23 +217,23 @@ if [ ! -z "$outputFolder"  ];then
 
       for((j=0; j<${#target_array[@]}; ++j)); do  
         log "deploying ${itemList} dev01 components to ${target_array[j]}"
-        force-dev-tool deploy -d "packages/${outputFolder}_dev01" "${target_array[j]}"
+        force-dev-tool deploy -d "${outputFolder}_dev01/src" "${target_array[j]}"
 
         log "deploying ${itemList} dev02 components to ${target_array[j]}"
-        force-dev-tool deploy -d "packages/${outputFolder}_dev02" "${target_array[j]}"
+        force-dev-tool deploy -d "${outputFolder}_dev02/src" "${target_array[j]}"
       done
     else
       log "No target environment specified, nothing will be deployed, if you want to deploy the package later on, please run"
-      log "force-dev-tool deploy -d packages/${outputFolder}_dev01 [TARGET]"
-      log "force-dev-tool deploy -d packages/${outputFolder}_dev02 [TARGET]"
+      log "force-dev-tool deploy -d ${outputFolder}_dev01/src [TARGET]"
+      log "force-dev-tool deploy -d ${outputFolder}_dev02/src [TARGET]"
     fi
   else
-    echo "$components" | create_package_xml.sh -o "packages/${outputFolder}/package.xml"
+    echo "$components" | create_package_xml.sh -o "${outputFolder}/src/package.xml"
 
-    if [ "$dev01_components_count" -gt 1 ];then
+    if [ "$dev01_components_count" -gt 0 ];then
       log "retrieveing ${itemList} components from dev01"
-      force-dev-tool retrieve -d "packages/${outputFolder}" dev01
-      remove_xml_elements "packages/${outputFolder}"
+      force-dev-tool retrieve -d "${outputFolder}/src" dev01
+      remove_xml_elements "${outputFolder}/src"
 
       OFS=$IFS
       IFS=',' read -r -a target_array <<< "$target"
@@ -239,16 +242,16 @@ if [ ! -z "$outputFolder"  ];then
       if [ ! -z "$target" ];then
         for((j=0; j<${#target_array[@]}; ++j)); do  
           log "deploying ${itemList} dev01 components to ${target_array[j]}"
-          force-dev-tool deploy -d "packages/${outputFolder}" "${target_array[j]}"
+          force-dev-tool deploy -d "${outputFolder}/src" "${target_array[j]}"
         done
       else
         log "No target environment specified, nothing will be deployed, if you want to deploy the package later on, please run"
-        log "force-dev-tool deploy -d packages/${outputFolder} [TARGET]"
+        log "force-dev-tool deploy -d ${outputFolder}/src [TARGET]"
       fi
     else
       log "retrieveing ${itemList} components from dev02"
-      force-dev-tool retrieve -d "packages/${outputFolder}" dev02
-      remove_xml_elements "packages/${outputFolder}"
+      force-dev-tool retrieve -d "${outputFolder}/src" dev02
+      remove_xml_elements "${outputFolder}/src"
 
       OFS=$IFS
       IFS=',' read -r -a target_array <<< "$target"
@@ -257,11 +260,11 @@ if [ ! -z "$outputFolder"  ];then
       if [ ! -z "$target" ];then
         for((j=0; j<${#target_array[@]}; ++j)); do
           log "deploying ${itemList} dev02 components to ${target_array[j]}"
-          force-dev-tool deploy -d "packages/${outputFolder}" "${target_array[j]}"
+          force-dev-tool deploy -d "${outputFolder}/src" "${target_array[j]}"
         done
       else
         log "No target environment specified, nothing will be deployed, if you want to deploy the package later on, please run"
-        log "force-dev-tool deploy -d packages/${outputFolder} [TARGET]"
+        log "force-dev-tool deploy -d ${outputFolder}/src [TARGET]"
       fi
     fi
   fi
@@ -282,17 +285,17 @@ else
     
     log "dev01 components count: $dev01_components_count"
     log "dev02 components count: $dev02_components_count"
-    if [ "$dev01_components_count" -gt 1 ] && [ "$dev02_components_count" -gt 1 ];then
+    if [ "$dev01_components_count" -gt 0 ] && [ "$dev02_components_count" -gt 0 ];then
       #retrieve
       log "retrieving ${items[i]} components from dev01"
-      echo "$dev01_components" | create_package_xml.sh -o "packages/${items[i]}_dev01/package.xml"
-      force-dev-tool retrieve -d "packages/${items[i]}_dev01" dev01
-      remove_xml_elements "packages/${items[i]}_dev01"
+      echo "$dev01_components" | create_package_xml.sh -o "packages/${items[i]}_dev01/src/package.xml"
+      force-dev-tool retrieve -d "packages/${items[i]}_dev01/src" dev01
+      remove_xml_elements "packages/${items[i]}_dev01/src"
 
       log "retrieving ${items[i]} components from dev02"
-      echo "$dev02_components" | create_package_xml.sh -o "packages/${items[i]}_dev02/package.xml"
-      force-dev-tool retrieve -d "packages/${items[i]}_dev02" dev02
-      remove_xml_elements "packages/${items[i]}_dev02"
+      echo "$dev02_components" | create_package_xml.sh -o "packages/${items[i]}_dev02/src/package.xml"
+      force-dev-tool retrieve -d "packages/${items[i]}_dev02/src" dev02
+      remove_xml_elements "packages/${items[i]}_dev02/src"
 
       OFS=$IFS
       IFS=',' read -r -a target_array <<< "$target"
@@ -301,23 +304,23 @@ else
       if [ ! -z "$target" ];then
         for((j=0; j<${#target_array[@]}; ++j)); do 
           log "deploying ${items[i]} dev01 components to ${target_array[j]}"
-          force-dev-tool deploy -d "packages/${items[i]}_dev01" "${target_array[j]}"
+          force-dev-tool deploy -d "packages/${items[i]}_dev01/src" "${target_array[j]}"
 
           log "deploying ${items[i]} dev02 components to ${target_array[j]}"
-          force-dev-tool deploy -d "packages/${items[i]}_dev02" "${target_array[j]}"
+          force-dev-tool deploy -d "packages/${items[i]}_dev02/src" "${target_array[j]}"
         done
       else
         log "No target environment specified, nothing will be deployed, if you want to deploy the package later on, please run"
-        log "force-dev-tool deploy -d packages/${items[i]}_dev01 [TARGET]"
-        log "force-dev-tool deploy -d packages/${items[i]}_dev02 [TARGET]"
+        log "force-dev-tool deploy -d packages/${items[i]}_dev01/src [TARGET]"
+        log "force-dev-tool deploy -d packages/${items[i]}_dev02/src [TARGET]"
       fi
     else
-      echo "$components" | create_package_xml.sh -o "packages/${items[i]}/package.xml"
+      echo "$components" | create_package_xml.sh -o "packages/${items[i]}/src/package.xml"
       
-      if [ "$dev01_components_count" -gt 1 ];then
+      if [ "$dev01_components_count" -gt 0 ];then
         log "retrieveing ${items[i]} components from dev01"
-        force-dev-tool retrieve -d "packages/${items[i]}" dev01
-        remove_xml_elements "packages/${items[i]}"
+        force-dev-tool retrieve -d "packages/${items[i]}/src" dev01
+        remove_xml_elements "packages/${items[i]}/src"
 
         OFS=$IFS
         IFS=',' read -r -a target_array <<< "$target"
@@ -326,16 +329,16 @@ else
         if [ ! -z "$target" ];then
           for((j=0; j<${#target_array[@]}; ++j)); do
             log "deploying ${items[i]} dev01 components to ${target_array[j]}"
-            force-dev-tool deploy -d "packages/${items[i]}" "${target_array[j]}"
+            force-dev-tool deploy -d "packages/${items[i]}/src" "${target_array[j]}"
           done
         else
           log "No target environment specified, nothing will be deployed, if you want to deploy the package later on, please run"
-          log "force-dev-tool deploy -d packages/${items[i]} [TARGET]"
+          log "force-dev-tool deploy -d packages/${items[i]}/src [TARGET]"
         fi
       else
         log "retrieveing ${items[i]} components from dev02"
-        force-dev-tool retrieve -d "packages/${items[i]}" dev02
-        remove_xml_elements "packages/${items[i]}"
+        force-dev-tool retrieve -d "packages/${items[i]}/src" dev02
+        remove_xml_elements "packages/${items[i]}/src"
         OFS=$IFS
         IFS=',' read -r -a target_array <<< "$target"
         IFS=$OFS
@@ -343,11 +346,11 @@ else
         if [ ! -z "$target" ];then
           for((j=0; j<${#target_array[@]}; ++j)); do
             log "deploying ${items[i]} dev02 components to ${target_array[j]}"
-            force-dev-tool deploy -d "packages/${items[i]}" "${target_array[j]}"
+            force-dev-tool deploy -d "packages/${items[i]}/src" "${target_array[j]}"
           done
         else
           log "No target environment specified, nothing will be deployed, if you want to deploy the package later on, please run"
-          log "force-dev-tool deploy -d packages/${items[i]} [TARGET]"
+          log "force-dev-tool deploy -d packages/${items[i]}/src [TARGET]"
         fi
       fi
     fi

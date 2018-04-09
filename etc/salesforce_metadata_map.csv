@@ -10,7 +10,7 @@
 "Authentication Provider","AuthProvider"
 "Auto Response Rule","AutoResponseRule"
 "Branding Set","BrandingSet"
-"Business Process","PLACEHOLDER"
+"Business Process","BusinessProcess"
 "CORS Whitelist Origin","CorsWhitelistOrigin"
 "CSP Trusted Site","CspTrustedSite"
 "Call Center","CallCenter"
