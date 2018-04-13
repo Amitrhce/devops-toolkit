@@ -58,3 +58,8 @@ get_and_deploy_sf_components.sh -t deva -o CIT-Release-13 Item-00901 Item-03744 
 get_vlocity_components.sh Item-02704 | retrieve_vlocity_metadata.py -d
 get_vlocity_components.sh Item-02704 | retrieve_vlocity_metadata.py -d -o config/deploymentsVlocity/CIT-Release-13
 ```
+# Typical Commands
+------------------
+
+```java
+get_and_validate_sf_components.sh -t deva Item-01575 Item-01826 Item-02478 Item-02517 Item-02522 Item-02585 Item-00079 Item-00170 Item-00228 Item-00231 Item-00259 Item-00272 Item-01075 Item-03914 Item-04050 Item-04101 Item-04124 Item-04128 Item-04148 Item-04151 Item-02740 Item-02755 Item-02925 Item-02977 Item-03364
