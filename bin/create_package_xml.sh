@@ -112,30 +112,32 @@ print_xml(){
   tempComponent=$1
   tempParentComponent=$2
   tempSfComponentType=$3
-
-  printf "\t%s\n" "<types>"
-  if [ ! -z $parentComponent ] && [ "$tempSfComponentType" != "CustomTab" ] && [ "$tempSfComponentType" != "CustomObjectTranslation" ]; then
-    if [ "$tempSfComponentType" == "Layout" ];then
-      printf "\t\t%s\n" "<members>$tempParentComponent-$tempComponent</members>"
-    elif [ "$tempSfComponentType" == "EmailTemplate" ] || [ "$tempSfComponentType" == "Document" ];then
-      printf "\t\t%s\n" "<members>$tempParentComponent/$tempComponent</members>"
-    elif [ "$tempSfComponentType" == "CustomMetadata" ];then
-      adjustedParentComponent=`echo $tempParentComponent | sed 's/__mdt//g'`
-      printf "\t\t%s\n" "<members>$adjustedParentComponent.$tempComponent</members>"
-    else
-      printf "\t\t%s\n" "<members>$tempParentComponent.$tempComponent</members>"
-    fi
-  else
-    printf "\t\t%s\n" "<members>$tempComponent</members>"
-  fi
-
-  if [ "$tempSfComponentType" == "CustomObject" ] && [ "$tempComponent" == "CaseStatus" ]; then
-    printf "\t\t%s\n" "<name>StandardValueSet</name>"
-  else
-    printf "\t\t%s\n" "<name>$tempSfComponentType</name>"
-  fi
   
-  printf "\t%s" "</types>";
+  if [ "$tempSfComponentType" != "Layout [User Profile]" ]; then
+    printf "\t%s\n" "<types>"
+    if [ ! -z $parentComponent ] && [ "$tempSfComponentType" != "CustomTab" ] && [ "$tempSfComponentType" != "CustomObjectTranslation" ]; then
+      if [ "$tempSfComponentType" == "Layout" ];then
+        printf "\t\t%s\n" "<members>$tempParentComponent-$tempComponent</members>"
+      elif [ "$tempSfComponentType" == "EmailTemplate" ] || [ "$tempSfComponentType" == "Document" ];then
+        printf "\t\t%s\n" "<members>$tempParentComponent/$tempComponent</members>"
+      elif [ "$tempSfComponentType" == "CustomMetadata" ];then
+        adjustedParentComponent=`echo $tempParentComponent | sed 's/__mdt//g'`
+        printf "\t\t%s\n" "<members>$adjustedParentComponent.$tempComponent</members>"
+      else
+        printf "\t\t%s\n" "<members>$tempParentComponent.$tempComponent</members>"
+      fi
+    else
+      printf "\t\t%s\n" "<members>$tempComponent</members>"
+    fi
+
+    if [ "$tempSfComponentType" == "CustomObject" ] && [ "$tempComponent" == "CaseStatus" ]; then
+      printf "\t\t%s\n" "<name>StandardValueSet</name>"
+    else
+      printf "\t\t%s\n" "<name>$tempSfComponentType</name>"
+    fi
+  
+    printf "\t%s" "</types>";
+  fi
 }
 
 findPositions(){

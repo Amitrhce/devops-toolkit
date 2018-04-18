@@ -195,7 +195,7 @@ if [ ! -z "$outputFolder"  ];then
 
   log "dev01 components count: $dev01_components_count"
   log "dev02 components count: $dev02_components_count"
-  if [ "$dev01_components_count" -gt 1 ] && [ "$dev02_components_count" -gt 1 ];then
+  if [ "$dev01_components_count" -gt 0 ] && [ "$dev02_components_count" -gt 0 ];then
     #retrieve
     log "retrieving ${itemList} components from dev01"
     echo "$dev01_components" | create_package_xml.sh -o "${outputFolder}_dev01/src/package.xml"
@@ -227,7 +227,7 @@ if [ ! -z "$outputFolder"  ];then
   else
     echo "$components" | create_package_xml.sh -o "${outputFolder}/src/package.xml"
 
-    if [ "$dev01_components_count" -gt 1 ];then
+    if [ "$dev01_components_count" -gt 0 ];then
       log "retrieveing ${itemList} components from dev01"
       force-dev-tool retrieve -d "${outputFolder}/src" dev01
       remove_xml_elements "${outputFolder}/src"
@@ -282,7 +282,7 @@ else
     
     log "dev01 components count: $dev01_components_count"
     log "dev02 components count: $dev02_components_count"
-    if [ "$dev01_components_count" -gt 1 ] && [ "$dev02_components_count" -gt 1 ];then
+    if [ "$dev01_components_count" -gt 0 ] && [ "$dev02_components_count" -gt 0 ];then
       #retrieve
       log "retrieving ${items[i]} components from dev01"
       echo "$dev01_components" | create_package_xml.sh -o "packages/${items[i]}_dev01/src/package.xml"
@@ -314,7 +314,7 @@ else
     else
       echo "$components" | create_package_xml.sh -o "packages/${items[i]}/src/package.xml"
       
-      if [ "$dev01_components_count" -gt 1 ];then
+      if [ "$dev01_components_count" -gt 0 ];then
         log "retrieveing ${items[i]} components from dev01"
         force-dev-tool retrieve -d "packages/${items[i]}/src" dev01
         remove_xml_elements "packages/${items[i]}/src"

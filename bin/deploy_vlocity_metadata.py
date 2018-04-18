@@ -206,7 +206,7 @@ def deploy_vlocity_metadata(row, target_env, remotes, deployed_components, optim
       if('Job_File_Path' in row and os.path.exists(row['Job_File_Path'])):
          # if optimization is turned on then don't deploy items with the same output folder
          if(not OPTIMIZATION or ('Output_Folder' in row and row['Output_Folder'] not in optimization_dict)):
-            deploy_cmd = 'vlocity packGetDiffsAndDeploy -job="' + row['Job_File_Path'] + '" -sf.username="'  + remote['username'] + '" -sf.password="' + remote['password'] + '" -sf.loginUrl="' + remote['serverUrl'] + '"'
+            deploy_cmd = 'vlocity packDeploy -job="' + row['Job_File_Path'] + '" -sf.username="'  + remote['username'] + '" -sf.password="' + remote['password'] + '" -sf.loginUrl="' + remote['serverUrl'] + '"'
             print_info('Running command: ' + color_string(deploy_cmd, Color.BLUE))
             #result = commands.getoutput(deploy_cmd)
             try:
