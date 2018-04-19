@@ -24,6 +24,7 @@ else
     fi
 fi
 
+#copiedComponents=""
 while read input; do 
     item=`echo $input | egrep "^(A|M)(\s)vlocity/.+" | cut -d" " -f2`
     if [ ! -z $item ]; then
@@ -35,14 +36,31 @@ while read input; do
 
         # init
         partialPath="$config/$deploymentsVlocity/$feature"
+        originalPath=""
         for i in "${subdirs[@]}"; do
             partialPath="$partialPath/$i"
+            if [ -z $originalPath ]; then
+               originalPath="$i"
+            else
+               originalPath="$originalPath/$i"
+            fi
+
             if [ ! -d "$partialPath" ]; then
                mkdir "$partialPath"
             fi
         done
+       
+        #if [[ *":$partialPath:"* != "$copiedComponents" ]]; then
         
-        echo "Copying item $item"
-        cp $item "$partialPath"
+        if [ ! -z "$partialPath" ]; then
+           copiedComponents=$copiedComponents":$partialPath:"
+           #echo "$copiedComponents"
+           echo "Copying item $partialPath"
+           for i in "$originalPath"/*; do
+              #echo "Copying item $i"
+              cp "$i" "$partialPath"
+           done
+        fi
+        #fi
     fi
 done
