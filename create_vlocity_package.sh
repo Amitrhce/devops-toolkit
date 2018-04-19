@@ -25,7 +25,7 @@ else
 fi
 
 while read input; do 
-    item=`echo $input | egrep "^(A|B)(\s)vlocity/.+" | cut -d" " -f2`
+    item=`echo $input | egrep "^(A|M)(\s)vlocity/.+" | cut -d" " -f2`
     if [ ! -z $item ]; then
         # get array of the subfolders
         IFS='/' read -ra subdirs <<< "$item"
