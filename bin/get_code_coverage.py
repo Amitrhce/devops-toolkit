@@ -364,8 +364,10 @@ def main():
             if(coverage_value < CODE_COVERAGE_LIMIT):
                if(this.DEBUG):
                   print_error('Error: ' + class_name + ' - test failed - code coverage is: ' + code_coverage[class_name], Color.RED)
+                  sys.exit(1)
                else:
                   print_error('Error: ' + class_name + ' - test failed - code coverage is: ' + code_coverage[class_name])
+                  sys.exit(1)
             else:
                print_info(class_name + ' successfully tested - code coverage is: ' + code_coverage[class_name])
  
