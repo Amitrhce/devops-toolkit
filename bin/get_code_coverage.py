@@ -97,9 +97,12 @@ def get_remote(remote_name, remotes):
    else:
       return remotes[remote_name] 
 
-def print_info(info):
+def print_info(info, color=None):
    if(DEBUG):
-      print(info)
+      if(color):
+         print(color_string(info, color))
+      else:
+         print(info)
 
 def print_error(message, color = None):
    if(color):
@@ -222,7 +225,7 @@ def process_test_result(test_class_name, result):
 
 def get_code_coverage(test_class_list, target_env, remotes):
    coverage_dict = {}
-   if(len(test_class_list) > 1):
+   if(len(test_class_list) > 0):
       if(platform.system() != 'Windows' and not is_tool("force")):
          raise SystemExit('Please install force first!\nFor more information look at\n"http    s://..."')
       remote = get_remote(target_env, remotes)
@@ -335,24 +338,25 @@ def main():
          package_xml = ""
                         
          if(not package_xml_path.is_file()):
-            raise SystemExit(args.package_xml + ' not found!')
+            print_error(args.package_xml + ' not found!')
          else:
             package_xml = ElementTree.parse(args.package_xml)
+
          get_list_of_classes(args.package_xml, class_list, test_class_list)
          missing_test_classes = check_test_class_presence(class_list, test_class_list)
          missing_classes = check_class_presence(class_list, test_class_list)
 
          for class_name in missing_test_classes:
             if(this.DEBUG):
-               print_error('Error: Test class is missing ' + class_name + '_Test', Color.RED)
+               print_info('Info: Test class is missing ' + class_name, Color.RED)
             else:
-               print_error('Error: Test class is missing ' + class_name + '_Test')
+               print_info('Info: Test class is missing ' + class_name)
 
          for class_name in missing_classes:
             if(this.DEBUG):
-               print_error('Error: Class is missing ' + class_name, Color.RED)
+               print_info('Info: Class is missing ' + class_name, Color.RED)
             else:
-               print_error('Error: Class is missing ' + class_name)
+               print_info('Info: Class is missing ' + class_name)
 
          code_coverage = get_code_coverage(test_class_list, target_env, remotes)
          for class_name in code_coverage:
@@ -363,7 +367,7 @@ def main():
                else:
                   print_error('Error: ' + class_name + ' - test failed - code coverage is: ' + code_coverage[class_name])
             else:
-               print_info(class_name + ' successfully tested - code coverage is: ' + code_coverage[class_name] + ' %')
+               print_info(class_name + ' successfully tested - code coverage is: ' + code_coverage[class_name])
  
          if not(missing_test_classes):
             print_info('Info: No missing test classes')
