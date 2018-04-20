@@ -32,7 +32,7 @@ CONFIG = 'etc'
 TEMP = 'temp'
 SCRIPT_FOLDER_PATH = os.path.dirname(os.path.realpath(__file__))
 CURRENT_WORKING_PATH = os.getcwd()
-DEFAULT_CODE_COVERAGE_MINIMUM = 85
+CODE_COVERAGE_LIMIT = 85
 
 class Color:
     BLUE = '\033[94m'
@@ -101,9 +101,11 @@ def print_info(info):
    if(DEBUG):
       print(info)
 
-def print_error(message):
-   #print(color_string(message, Color.RED), file=sys.stderr)
-   print(color_string(message, Color.RED))
+def print_error(message, color = None):
+   if(color):
+      print >> sys.stderr, color_string(message, color)
+   else:
+      print >> sys.stderr, message
 
 def get_remote_org_configuration(org_json_file_path):
    orgs_json_file = Path(org_json_file_path)
@@ -161,7 +163,7 @@ def check_test_class_presence(class_list, test_class_list):
    for class_name in class_list:
       if(class_name + '_Test' not in test_class_list):
          missing_test_classes.append(class_name + '_Test')
-         print_info(color_string('Test class is missing ' + class_name + '_Test', Color.RED))
+         #print_info(color_string('Test class is missing ' + class_name + '_Test', Color.RED))
    return missing_test_classes
 
 def check_class_presence(class_list, test_class_list):
@@ -171,7 +173,7 @@ def check_class_presence(class_list, test_class_list):
       class_name = test_suffix.sub('', test_class_name)
       if(class_name not in class_list):
          missing_classes.append(class_name)
-         print_info(color_string('Class is missing ' + class_name, Color.RED))
+         #print_info(color_string('Class is missing ' + class_name, Color.RED))
    return missing_classes
 
 def get_list_of_classes(package_xml, class_list, test_class_list):
@@ -238,6 +240,10 @@ def get_code_coverage(test_class_list, target_env, remotes):
          result = process_test_result(test_class, result)
          coverage_dict.update(result)
    return coverage_dict
+
+def percentage_to_int(percentage):
+   int_value = int(percentage.replace("%", ""))
+   return int_value
 
 def main():
    parser = argparse.ArgumentParser(description='Runs tests in target environment and gets code coverage.\n' +
@@ -318,7 +324,7 @@ def main():
             code_coverage = get_code_coverage(row, target_env, remotes)
             print 'jsem tady'
             for class_coverage in code_coverage:
-               print(class_coverage)
+               print_error(class_coverage)
 
    elif(args.package_xml):
       class_list = []
@@ -333,12 +339,37 @@ def main():
          else:
             package_xml = ElementTree.parse(args.package_xml)
          get_list_of_classes(args.package_xml, class_list, test_class_list)
-         check_test_class_presence(class_list, test_class_list)
-         check_class_presence(class_list, test_class_list)
+         missing_test_classes = check_test_class_presence(class_list, test_class_list)
+         missing_classes = check_class_presence(class_list, test_class_list)
+
+         for class_name in missing_test_classes:
+            if(this.DEBUG):
+               print_error('Error: Test class is missing ' + class_name + '_Test', Color.RED)
+            else:
+               print_error('Error: Test class is missing ' + class_name + '_Test')
+
+         for class_name in missing_classes:
+            if(this.DEBUG):
+               print_error('Error: Class is missing ' + class_name, Color.RED)
+            else:
+               print_error('Error: Class is missing ' + class_name)
+
          code_coverage = get_code_coverage(test_class_list, target_env, remotes)
          for class_name in code_coverage:
-            print(class_name + ': ' + code_coverage[class_name])
+            coverage_value = percentage_to_int(code_coverage[class_name])
+            if(coverage_value < CODE_COVERAGE_LIMIT):
+               if(this.DEBUG):
+                  print_error('Error: ' + class_name + ' - test failed - code coverage is: ' + code_coverage[class_name], Color.RED)
+               else:
+                  print_error('Error: ' + class_name + ' - test failed - code coverage is: ' + code_coverage[class_name])
+            else:
+               print_info(class_name + ' successfully tested - code coverage is: ' + code_coverage[class_name] + ' %')
  
+         if not(missing_test_classes):
+            print_info('Info: No missing test classes')
+
+         if not(missing_classes):
+            print_info('Info: No missing classes')
    else:
       for target_env in environments:
          #process input as list of package paths
