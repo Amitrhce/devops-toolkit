@@ -4,7 +4,7 @@
 SCRIPTPATH=$(dirname "$0")
 #SCRIPTPATH=`pwd -P`
 #SCRIPTPATH=/Users/stepan/Workspace/bin/deployUtils
-CONFIG=$SCRIPTPATH/etc
+CONFIG=$SCRIPTPATH/../etc
 TEMPLATES="$CONFIG/jobTemplates"
 SFMETADATAMAP="salesforce_metadata_map.csv"
 FETCHRESULTSTEMPLATE="FetchResultTemplate.json"
