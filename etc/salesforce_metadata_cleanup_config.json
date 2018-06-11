@@ -3,43 +3,28 @@
       "profiles":[
          {
             "element-name":"userPermissions",
-            "matching":"<name>InstallPackaging</name>",
+            "matching":"<name>ModifyMetadata</name>",
+            "fileMask":".*"
+         },
+         {
+            "element-name":"userPermissions",
+            "matching":"<name>SubscribeDashboardToOtherUsers</name>",
+            "fileMask":".*"
+         },
+         {
+            "element-name":"userPermissions",
+            "matching":"<name>ViewCaseInteraction</name>",
+            "fileMask":".*"
+         },
+         {
+            "element-name":"userPermissions",
+            "matching":"<name>AssignUserToSkill</name>",
             "fileMask":".*"
          }
       ]
    },
    "replace-tag-value":{
-      "classes":[
-         {
-            "element-name":"minorNumber",
-            "value":".*",
-            "replace-value":"125",
-            "fileMask":".+cls-meta.xml"
-         }
-      ],
-      "pages":[
-         {
-            "element-name":"minorNumber",
-            "value":".*",
-            "replace-value":"125",
-            "fileMask":".+page-meta.xml"
-         }
-      ],
-      "components":[
-         {
-            "element-name":"minorNumber",
-            "value":".*",
-            "replace-value":"125",
-            "fileMask":".+component-meta.xml"
-         }
-      ]
    },
    "remove-element":{
-      "connectedApps":[
-         {
-            "element-name":"consumerKey",
-            "fileMask":".*"
-         }
-      ]
    }
 }

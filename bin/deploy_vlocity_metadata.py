@@ -313,7 +313,7 @@ def write_temporary_yaml_file(vlocity_yaml_file_path, vlocity_yaml_file_string):
 def main():
    parser = argparse.ArgumentParser(description='Exports vlocity components from a source SF environment.\n' +
                                                 'Example:\n' +
-                                                '\tretrieve_vlocity_components.py -d',
+                                                '\t' + os.path.basename(__file__),
 						formatter_class=RawTextHelpFormatter)
    parser.add_argument(
         "-d", "--debug", dest="debug",

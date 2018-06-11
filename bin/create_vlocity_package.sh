@@ -1,7 +1,7 @@
 #!/bin/bash
 
 config=config
-deploymentsVlocity=deploymentsVlocity
+deploymentsVlocity=deployments
 
 if [ $# -ne 1 ]; 
     then echo "Example:"

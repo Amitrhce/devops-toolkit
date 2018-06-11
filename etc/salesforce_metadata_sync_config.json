@@ -1,36 +1,56 @@
 {
    "appMenus":{
-      "synchronization":"off",
+      "synchronization":"on",
+      "fileReplace":"on",
+      "preprocessing":"off"
+   },
+   "approvalProcesses":{
+      "synchronization":"on",
       "fileReplace":"on",
       "preprocessing":"off"
    },
    "applications":{
-      "synchronization":"off",
+      "synchronization":"on",
       "fileReplace":"on",
       "preprocessing":"off"
    },
    "assignmentRules":{
-      "synchronization":"off",
+      "synchronization":"on",
       "fileReplace":"on",
       "preprocessing":"off"
    },
    "aura":{
+      "synchronization":"on",
+      "fileReplace":"on",
+      "preprocessing":"off"
+   },
+   "authproviders":{
+      "synchronization":"on",
+      "fileReplace":"on",
+      "preprocessing":"off"
+   },
+   "authproviders":{
       "synchronization":"off",
       "fileReplace":"on",
       "preprocessing":"off"
    },
-   "callCenters":{
+  "callCenters":{
       "synchronization":"off",
       "fileReplace":"on",
       "preprocessing":"off"
    },
-   "campaignInfluenceModels":{
-      "synchronization":"off",
+   "cleanDataServices":{
+      "synchronization":"on",
+      "fileReplace":"on",
+      "preprocessing":"off"
+   },
+  "campaignInfluenceModels":{
+      "synchronization":"on",
       "fileReplace":"on",
       "preprocessing":"off"
    },
    "certs":{
-      "synchronization":"off",
+      "synchronization":"on",
       "fileReplace":"on",
       "preprocessing":"off"
    },
@@ -45,7 +65,7 @@
       "preprocessing":"off"
    },
    "communities":{
-      "synchronization":"off",
+      "synchronization":"on",
       "fileReplace":"on",
       "preprocessing":"off"
    },
@@ -54,28 +74,88 @@
       "fileReplace":"on",
       "preprocessing":"off"
    },
+   "connectedApps":{
+      "synchronization":"on",
+      "fileReplace":"on",
+      "preprocessing":"on"
+   },
+   "contentAssets":{
+      "synchronization":"on",
+      "fileReplace":"on",
+      "preprocessing":"off"
+   },
    "corsWhitelistOrigins":{
-      "synchronization":"off",
+      "synchronization":"on",
+      "fileReplace":"on",
+      "preprocessing":"off"
+   },
+   "cspTrustedSites":{
+      "synchronization":"on",
+      "fileReplace":"on",
+      "preprocessing":"off"
+   },
+   "customApplicationComponents":{
+      "synchronization":"on",
       "fileReplace":"on",
       "preprocessing":"off"
    },
    "customMetadata":{
-      "synchronization":"off",
-      "fileReplace":"on",
-      "preprocessing":"off"
-   },
-   "dashboards":{
-      "synchronization":"off",
-      "fileReplace":"on",
-      "preprocessing":"off"
-   },
-   "documents":{
-      "synchronization":"off",
+      "synchronization":"on",
       "fileReplace":"on",
       "preprocessing":"off"
    },
    "duplicateRules":{
+      "synchronization":"on",
+      "fileReplace":"on",
+      "preprocessing":"off"
+   },
+   "entitlementProcesses":{
       "synchronization":"off",
+      "fileReplace":"on",
+      "preprocessing":"off"
+   },
+   "escalationRules":{
+      "synchronization":"off",
+      "fileReplace":"on",
+      "preprocessing":"off"
+   },
+   "flexiPages":{
+      "synchronization":"on",
+      "fileReplace":"on",
+      "preprocessing":"off"
+   },
+   "flowDefinitions":{
+      "synchronization":"on",
+      "fileReplace":"on",
+      "preprocessing":"off"
+   },
+  "flow":{
+      "synchronization":"on",
+      "fileReplace":"on",
+      "preprocessing":"off"
+   },
+   "globalValueSets":{
+      "synchronization":"on",
+      "fileReplace":"on",
+      "preprocessing":"off"
+   },
+   "homePageLayouts":{
+      "synchronization":"on",
+      "fileReplace":"on",
+      "preprocessing":"off"
+   },
+   "installedPackages":{
+      "synchronization":"on",
+      "fileReplace":"on",
+      "preprocessing":"off"
+   },
+  "documents":{
+      "synchronization":"on",
+      "fileReplace":"on",
+      "preprocessing":"off"
+   },
+   "layouts":{
+      "synchronization":"on",
       "fileReplace":"on",
       "preprocessing":"off"
    },
@@ -125,27 +205,37 @@
       "preprocessing":"off"
    },
    "labels":{
-      "synchronization":"off",
-      "fileReplace":"on",
+      "synchronization":"on",
+      "fileReplace":"off",
       "preprocessing":"off"
    },
    "layouts":{
-      "synchronization":"off",
+      "synchronization":"on",
       "fileReplace":"on",
       "preprocessing":"off"
    },
    "letterhead":{
-      "synchronization":"off",
+      "synchronization":"on",
       "fileReplace":"on",
       "preprocessing":"off"
    },
    "matchingRules":{
-      "synchronization":"off",
+      "synchronization":"on",
       "fileReplace":"on",
       "preprocessing":"off"
    },
    "milestoneTypes":{
+      "synchronization":"on",
+      "fileReplace":"on",
+      "preprocessing":"off"
+   },
+   "moderation":{
       "synchronization":"off",
+      "fileReplace":"on",
+      "preprocessing":"off"
+   },
+   "namedCredentials":{
+      "synchronization":"on",
       "fileReplace":"on",
       "preprocessing":"off"
    },
@@ -155,7 +245,7 @@
       "preprocessing":"off"
    },
    "networks":{
-      "synchronization":"off",
+      "synchronization":"on",
       "fileReplace":"on",
       "preprocessing":"off"
    },
@@ -165,13 +255,8 @@
       "preprocessing":"off"
    },
    "objects":{
-      "synchronization":"off",
-      "fileReplace":"on",
-      "preprocessing":"off"
-   },
-   "package.xml":{
-      "synchronization":"off",
-      "fileReplace":"on",
+      "synchronization":"on",
+      "fileReplace":"off",
       "preprocessing":"off"
    },
    "pages":{
@@ -185,7 +270,7 @@
       "preprocessing":"off"
    },
    "permissionsets":{
-      "synchronization":"off",
+      "synchronization":"on",
       "fileReplace":"on",
       "preprocessing":"off"
    },
@@ -200,22 +285,22 @@
       "preprocessing":"off"
    },
    "profiles":{
-      "synchronization":"off",
-      "fileReplace":"on",
+      "synchronization":"on",
+      "fileReplace":"off",
       "preprocessing":"off"
    },
    "queues":{
-      "synchronization":"off",
+      "synchronization":"on",
       "fileReplace":"on",
       "preprocessing":"off"
    },
    "quickActions":{
-      "synchronization":"off",
+      "synchronization":"on",
       "fileReplace":"on",
       "preprocessing":"off"
    },
    "remoteSiteSettings":{
-      "synchronization":"off",
+      "synchronization":"on",
       "fileReplace":"on",
       "preprocessing":"off"
    },
@@ -230,51 +315,61 @@
       "preprocessing":"off"
    },
    "roles":{
-      "synchronization":"off",
+      "synchronization":"on",
       "fileReplace":"on",
       "preprocessing":"off"
    },
    "samlssoconfigs":{
-      "synchronization":"off",
+      "synchronization":"on",
       "fileReplace":"on",
-      "preprocessing":"off"
+      "preprocessing":"on"
    },
    "settings":{
-      "synchronization":"off",
+      "synchronization":"on",
       "fileReplace":"on",
       "preprocessing":"off"
    },
    "sharingRules":{
-      "synchronization":"off",
+      "synchronization":"on",
       "fileReplace":"on",
       "preprocessing":"off"
    },
    "siteDotComSites":{
-      "synchronization":"off",
+      "synchronization":"on",
       "fileReplace":"on",
       "preprocessing":"off"
    },
    "sites":{
-      "synchronization":"off",
+      "synchronization":"on",
       "fileReplace":"on",
       "preprocessing":"off"
    },
    "standardValueSets":{
-      "synchronization":"off",
+      "synchronization":"on",
       "fileReplace":"on",
       "preprocessing":"off"
    },
    "staticresources":{
-      "synchronization":"off",
+      "synchronization":"on",
       "fileReplace":"on",
       "preprocessing":"off"
    },
    "tabs":{
-      "synchronization":"off",
+      "synchronization":"on",
       "fileReplace":"on",
       "preprocessing":"off"
    },
    "triggers":{
+      "synchronization":"on",
+      "fileReplace":"on",
+      "preprocessing":"off"
+   },
+   "topicsForObjects":{
+      "synchronization":"off",
+      "fileReplace":"on",
+      "preprocessing":"off"
+   },
+   "userCriteria":{
       "synchronization":"off",
       "fileReplace":"on",
       "preprocessing":"off"

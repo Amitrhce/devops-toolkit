@@ -9,6 +9,8 @@ import argparse
 from argparse import RawTextHelpFormatter
 import json
 import subprocess
+from shutil import copyfile
+import re
 
 '''
 import json
@@ -74,6 +76,50 @@ def synchronize_folders(source_folder_path, destination_folder_path):
          raise RuntimeError("Synchronizatin of folders failed (Command: '{}' returned error (code {}). If you want to ignore errors during the synchronization you can run it with --ignore-errors parameter. Please, also use -d parameter for more details".format(e.cmd, e.returncode))
       result = e.output 
 
+def get_file_list(path, fileMask = '.*'):
+   file_list = []
+
+   for name in os.listdir(path):
+      file_matcher = re.compile(fileMask)
+      if not os.path.isdir(path + '/' + name) and file_matcher.match(name):
+          file_list.append(name)
+   return file_list
+
+def synchronize_files_in_folders(source_folder_path, destination_folder_path, metadata_type):
+   if not os.path.exists(destination_folder_path):
+      os.makedirs(destination_folder_path)
+
+   source_folder_files = get_file_list(source_folder_path)
+   destination_folder_files = get_file_list(destination_folder_path)
+
+   aggregated_output = ''
+   for file_name in source_folder_files:
+      source_file = source_folder_path + '/' + file_name
+      destination_file = destination_folder_path + '/' + file_name
+      if file_name in destination_folder_files:
+         # run update_xml.py script
+         cmd = 'update_xml.py -d -m ' + metadata_type + ' "' + source_file + '" "' + destination_file + '"'
+         try:
+            result = subprocess.check_output(cmd, shell=True)
+         except subprocess.CalledProcessError as e:
+            if(not IGNORE_ERRORS):
+               raise RuntimeError("Synchronization of files failed (Command: '{}' returned error (code {}). If you want to ignore errors during the synchronization you can run it with --ignore-errors parameter. Please, also use -d parameter for more details".format(e.cmd, e.returncode))
+            result = e.output
+         aggregated_output += result + '\n'
+      else:
+         # TODO try-catch
+         copyfile(source_file, destination_file)
+
+   return aggregated_output
+   '''
+   sync_cmd = 'rsync -acv ' + source_folder_path + '/ ' + destination_folder_path
+   try:
+      result = subprocess.check_output(sync_cmd, shell=True)
+   except subprocess.CalledProcessError as e:
+      if(not IGNORE_ERRORS):
+         raise RuntimeError("Synchronizatin of folders failed (Command: '{}' returned error (code {}). If you want to ignore errors during the synchronization you can run it with --ignore-errors parameter. Please, also use -d parameter for more details".format(e.cmd, e.returncode))
+      result = e.output 
+    '''
 
 def main():
    parser = argparse.ArgumentParser(description='Synchronizes two folders with SF metadata using configuration file.\n' +
@@ -120,6 +166,7 @@ def main():
             pass
          if 'fileReplace' in folder_config and folder_config['fileReplace'] == 'off':
             # xml merge
+            synchronize_files_in_folders(args.source + '/' + name, args.target + '/' + name, name)
             pass
          else:
             # simply replace files in folder
