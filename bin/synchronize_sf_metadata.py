@@ -98,7 +98,7 @@ def synchronize_files_in_folders(source_folder_path, destination_folder_path, me
       destination_file = destination_folder_path + '/' + file_name
       if file_name in destination_folder_files:
          # run update_xml.py script
-         cmd = 'update_xml.py -d -m ' + metadata_type + ' "' + source_file + '" "' + destination_file + '"'
+         cmd = 'update_xml.py -d -m ' + metadata_type + ' "' + destination_file + '" "' + source_file + '"'
          try:
             result = subprocess.check_output(cmd, shell=True)
          except subprocess.CalledProcessError as e:
@@ -160,14 +160,14 @@ def main():
    # source folder
    for name in get_folder_list(args.source):
       folder_config = get_sf_folder_config(name, sf_sync_config)
-      if 'synchronization' in folder_config and folder_config['synchronization'] == 'on':
+      if folder_config is not None and 'synchronization' in folder_config and folder_config['synchronization'] == 'on':
          if 'preprocessing' in folder_config and folder_config['preprocessing'] == 'on':
             # run preprocessing
             pass
          if 'fileReplace' in folder_config and folder_config['fileReplace'] == 'off':
             # xml merge
             synchronize_files_in_folders(args.source + '/' + name, args.target + '/' + name, name)
-            pass
+            print name
          else:
             # simply replace files in folder
             source_folder_path = args.source + '/' + name
