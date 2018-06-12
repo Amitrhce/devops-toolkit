@@ -285,7 +285,7 @@
       "preprocessing":"off"
    },
    "profiles":{
-      "synchronization":"on",
+      "synchronization":"off",
       "fileReplace":"off",
       "preprocessing":"off"
    },
