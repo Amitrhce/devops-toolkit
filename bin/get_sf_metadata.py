@@ -131,6 +131,10 @@ def main():
         help="Source environment")
 
    parser.add_argument(
+        "-o", "--output", dest="output",
+        help="Output folder")
+
+   parser.add_argument(
         "--debug-level", dest="debug_level",type=int,
         help="Debug level from {1, 2}")
 
@@ -174,7 +178,11 @@ def main():
       for instance in records_per_items_and_instances[item]:
          # create package xml
          csv_output = get_csv_output(records_per_items_and_instances[item][instance])
-         package_xml_path = PACKAGES + '/' + item + '_' + instance + '/src'
+         if args.output:
+            package_xml_path = args.output
+         else:
+            package_xml_path = PACKAGES + '/' + item + '_' + instance + '/src'
+
          p = Popen(['create_package_xml.sh', '-o', package_xml_path + '/package.xml'], stdout=PIPE, stdin=PIPE, stderr=STDOUT)    
          create_package_stdout = p.communicate(input = csv_output)[0]
          
