@@ -26,5 +26,12 @@
    "replace-tag-value":{
    },
    "remove-element":{
+   },
+   "remove-file":{
+      "connectedApps":[
+         {
+            "fileMask":".*"
+         }
+      ]
    }
 }

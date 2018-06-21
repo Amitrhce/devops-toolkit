@@ -153,5 +153,16 @@
             "unique"
          ]
       }
+   },
+   "permissionsets":{
+      "fieldPermissions":{
+         "uniqueKeys":[
+            "field"
+         ],
+         "equalKeys":[
+            "readable",
+            "editable"
+         ]
+      }
    }
 }

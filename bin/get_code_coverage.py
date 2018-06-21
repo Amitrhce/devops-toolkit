@@ -184,8 +184,10 @@ def get_list_of_classes(package_xml, class_list, test_class_list):
 
    with open(package_xml) as package_xml_fd:
       package_xml_dict = xmltodict.parse(package_xml_fd.read())
-   
-   for type_element in package_xml_dict['Package']['types']:
+
+   # is types list or dictionary?
+   if isinstance(package_xml_dict['Package']['types'], dict):
+      type_element = package_xml_dict['Package']['types']
       if type_element['name'] == 'ApexClass':
          for class_name in type_element['members']:
             if not re.search(test_class_pattern, class_name):
@@ -194,6 +196,17 @@ def get_list_of_classes(package_xml, class_list, test_class_list):
             else:
                print_info('Adding class into a list of test classes: ' + color_string(class_name, Color.MAGENTA))
                test_class_list.append(class_name)
+     
+   else:
+      for type_element in package_xml_dict['Package']['types']:
+         if type_element['name'] == 'ApexClass':
+            for class_name in type_element['members']:
+               if not re.search(test_class_pattern, class_name):
+                  print_info('Adding class into a list of classes: ' + color_string(class_name, Color.MAGENTA))
+                  class_list.append(class_name)
+               else:
+                  print_info('Adding class into a list of test classes: ' + color_string(class_name, Color.MAGENTA))
+                  test_class_list.append(class_name)
    return class_list
 
 def force_login(remote):
@@ -359,18 +372,21 @@ def main():
                print_info('Info: Class is missing ' + class_name)
 
          code_coverage = get_code_coverage(test_class_list, target_env, remotes)
+         error_flag = False
          for class_name in code_coverage:
             coverage_value = percentage_to_int(code_coverage[class_name])
             if(coverage_value < CODE_COVERAGE_LIMIT):
+               error_flag = True
                if(this.DEBUG):
                   print_error('Error: ' + class_name + ' - test failed - code coverage is: ' + code_coverage[class_name], Color.RED)
-                  sys.exit(1)
                else:
                   print_error('Error: ' + class_name + ' - test failed - code coverage is: ' + code_coverage[class_name])
-                  sys.exit(1)
             else:
                print_info(class_name + ' successfully tested - code coverage is: ' + code_coverage[class_name])
  
+         if(error_flag):
+            sys.exit(1)
+
          if not(missing_test_classes):
             print_info('Info: No missing test classes')
 

@@ -271,7 +271,7 @@
    },
    "permissionsets":{
       "synchronization":"on",
-      "fileReplace":"on",
+      "fileReplace":"off",
       "preprocessing":"off"
    },
    "profilePasswordPolicies":{
@@ -285,7 +285,7 @@
       "preprocessing":"off"
    },
    "profiles":{
-      "synchronization":"off",
+      "synchronization":"on",
       "fileReplace":"off",
       "preprocessing":"off"
    },

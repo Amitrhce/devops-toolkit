@@ -200,12 +200,16 @@ if [ ! -z "$outputFolder"  ];then
     log "retrieving ${itemList} components from dev01"
     echo "$dev01_components" | create_package_xml.sh -o "${outputFolder}_dev01/src/package.xml"
     force-dev-tool retrieve -d "${outputFolder}_dev01/src" dev01
-    remove_xml_elements "${outputFolder}_dev01/src"
+
+    clean_sf_metadata.py -s "${outputFolder}_dev01/src"
+    #remove_xml_elements "${outputFolder}_dev01/src"
 
     log "retrieving ${itemsList} components from dev02"
     echo "$dev02_components" | create_package_xml.sh -o "${outputFolder}_dev02/src/package.xml"
     force-dev-tool retrieve -d "${outputFolder}_dev02/src" dev02
-    remove_xml_elements "${outputFolder}_dev02/src"
+    
+    clean_sf_metadata.py -s "${outputFolder}_dev02/src"
+    #remove_xml_elements "${outputFolder}_dev02/src"
 
     if [ ! -z "$target" ];then
       OFS=$IFS
@@ -230,7 +234,9 @@ if [ ! -z "$outputFolder"  ];then
     if [ "$dev01_components_count" -gt 0 ];then
       log "retrieveing ${itemList} components from dev01"
       force-dev-tool retrieve -d "${outputFolder}/src" dev01
-      remove_xml_elements "${outputFolder}/src"
+
+      clean_sf_metadata.py -s "${outputFolder}/src"
+      #remove_xml_elements "${outputFolder}/src"
 
       OFS=$IFS
       IFS=',' read -r -a target_array <<< "$target"
@@ -248,7 +254,9 @@ if [ ! -z "$outputFolder"  ];then
     else
       log "retrieveing ${itemList} components from dev02"
       force-dev-tool retrieve -d "${outputFolder}/src" dev02
-      remove_xml_elements "${outputFolder}/src"
+
+      clean_sf_metadata.py -s "${outputFolder}/src"
+      #remove_xml_elements "${outputFolder}/src"
 
       OFS=$IFS
       IFS=',' read -r -a target_array <<< "$target"
@@ -287,12 +295,17 @@ else
       log "retrieving ${items[i]} components from dev01"
       echo "$dev01_components" | create_package_xml.sh -o "packages/${items[i]}_dev01/src/package.xml"
       force-dev-tool retrieve -d "packages/${items[i]}_dev01/src" dev01
-      remove_xml_elements "packages/${items[i]}_dev01/src"
+
+      clean_sf_metadata.py -s "packages/${items[i]}_dev01/src"
+      #remove_xml_elements "packages/${items[i]}_dev01/src"
 
       log "retrieving ${items[i]} components from dev02"
       echo "$dev02_components" | create_package_xml.sh -o "packages/${items[i]}_dev02/src/package.xml"
       force-dev-tool retrieve -d "packages/${items[i]}_dev02/src" dev02
-      remove_xml_elements "packages/${items[i]}_dev02/src"
+
+      clean_sf_metadata.py -s "packages/${items[i]}_dev02/src"
+      #remove_xml_elements "packages/${items[i]}_dev02/src"
+
 
       OFS=$IFS
       IFS=',' read -r -a target_array <<< "$target"
@@ -317,7 +330,9 @@ else
       if [ "$dev01_components_count" -gt 0 ];then
         log "retrieveing ${items[i]} components from dev01"
         force-dev-tool retrieve -d "packages/${items[i]}/src" dev01
-        remove_xml_elements "packages/${items[i]}/src"
+
+        clean_sf_metadata.py -s "packages/${items[i]}/src"
+        #remove_xml_elements "packages/${items[i]}/src"
 
         OFS=$IFS
         IFS=',' read -r -a target_array <<< "$target"
@@ -335,7 +350,10 @@ else
       else
         log "retrieveing ${items[i]} components from dev02"
         force-dev-tool retrieve -d "packages/${items[i]}/src" dev02
-        remove_xml_elements "packages/${items[i]}/src"
+
+        clean_sf_metadata.py -s "packages/${items[i]}/src"
+        #remove_xml_elements "packages/${items[i]}/src"
+
         OFS=$IFS
         IFS=',' read -r -a target_array <<< "$target"
         IFS=$OFS
