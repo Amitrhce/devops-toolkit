@@ -143,6 +143,10 @@ def main():
         help="Destination folder", required=True)
 
    parser.add_argument(
+        "-c", "--config", dest="config",
+        help="Config file to be used", required=True)
+
+   parser.add_argument(
         "--debug-level", dest="debug_level",type=int,
         help="Debug level from {1, 2}")
 
@@ -154,8 +158,13 @@ def main():
    if(args.debug_level == 2):
       this.DEBUG_LEVEL = 2
 
+   if(args.config):
+      sync_json_config = args.config
+   else:
+      sync_json_config = SF_SYNC_JSON_CONFIG
+
    # load sf synchronization configuration
-   sf_sync_config = load_sf_sync_config(SF_SYNC_JSON_CONFIG)
+   sf_sync_config = load_sf_sync_config(sync_json_config)
 
    # source folder
    for name in get_folder_list(args.source):
