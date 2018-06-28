@@ -10,6 +10,7 @@ from argparse import RawTextHelpFormatter
 import json
 import subprocess
 import re
+import xml.etree.ElementTree as ElementTree
 
 # script context variables
 SCRIPT_FOLDER_PATH = os.path.dirname(os.path.realpath(__file__))
@@ -20,6 +21,7 @@ this = sys.modules[__name__]
 DEBUG = False
 IGNORE_ERRORS = False
 DEBUG_LEVEL = 1
+DEFAULT_NAMESPACE = "http://soap.sforce.com/2006/04/metadata"
 
 # configuration folders and files
 DEFAULT_SF_CLEANUP_JSON_CONFIG = 'salesforce_metadata_cleanup_config.json'
@@ -85,7 +87,7 @@ def is_tool(name):
 
 # load synchronization configuration
 def load_config(config_file_path):
-   with open(SCRIPT_FOLDER_PATH + '/' + CONFIG + '/' + config_file_path, 'r') as json_file:
+   with open(config_file_path, 'r') as json_file:
       json_data = json.load(json_file)
 
    return json_data
@@ -126,13 +128,13 @@ def remove_element_matching(sf_cleanup_config, path, folder_list):
                      element = rule['element-name']
                      cmd = 'metadata-xml-tool remove-element-matching ' + element + ' "' +  matching + '" ' + path + "/" + folder_name + "/" + file_name
 
-                     print_info("Removing element " + color_string(element, Color.MAGENTA) + " matching " + color_string(matching, Color.MAGENTA) + " from " + color_string(path + "/" + folder_name + "/" + file_name, Color.MAGENTA))
+                     print_info("Element to be removed (if exists) " + color_string(element, Color.MAGENTA) + " matching " + color_string(matching, Color.MAGENTA) + " from " + color_string(path + "/" + folder_name + "/" + file_name, Color.MAGENTA))
                      try:
                         result = subprocess.check_output(cmd, shell=True)
                      except subprocess.CalledProcessError as e:
                         if(not IGNORE_ERRORS):
                            raise RuntimeError("remove-element_matching command failed (Command: '{}' returned error (code {}). If you want to ignore errors during the processing you can run it with --ignore-errors parameter. Please, also use -d parameter for more details".format(e.cmd, e.returncode))
-                        result = e.output 
+                        result = e.output
 
 def remove_element(sf_cleanup_config, path, folder_list):
    if 'remove-element' in sf_cleanup_config:
@@ -213,6 +215,57 @@ def remove_files(sf_cleanup_config, path, folder_list):
                         raise RuntimeError(error_message)
                      else:
                         print_error(error_message)
+               
+               # if there is not file left in the folder then delete the folder as well
+               if 'fileMask' in rule:
+                  file_list = get_file_list(path + "/" + folder_name, rule['fileMask'])
+               else:
+                  file_list = get_file_list(path + "/" + folder_name)
+ 
+               if len(file_list) == 0:
+                  print_info("Folder is empty - removing folder: " + color_string(path + "/" + folder_name, Color.MAGENTA))
+                  os.rmdir(path + "/" + folder_name)
+
+def adjust_package_xml(sf_cleanup_config, path, folder_list, package_xml, namespace):
+    if 'remove-file' in sf_cleanup_config:
+      config = sf_cleanup_config['remove-file']
+      for folder_name in folder_list:
+         if folder_name in config:
+            folder_config = config[folder_name]
+            for rule in folder_config:
+               file_list = []
+               if 'fileMask' in rule:
+                  file_list = get_file_list(path + "/" + folder_name, rule['fileMask'])
+               else:
+                  file_list = get_file_list(path + "/" + folder_name)
+
+               for file_name in file_list:
+                  if 'package_xml_type' in rule:
+                     # TODO: optimize - pass dictionary with names and members
+                     remove_from_package_xml(package_xml, rule['package_xml_type'], get_filename_without_extension(file_name), namespace)
+
+def remove_from_package_xml(package_xml, name, member, namespace):
+   root = package_xml.getroot()
+   for child in root:
+      element_name = child.find('{' + namespace  + '}' + 'name') 
+      if element_name is not None and get_element_local_name(element_name) == 'name' and element_name.text == name:
+         element_members = child.findall('{' + namespace  + '}' + 'members')
+         for element_member in element_members:
+            if element_member.text == member:
+               print_info("Removing element from package.xml " + color_string(name + "." + member, Color.MAGENTA))
+               child.remove(element_member)
+               # check whether it's empty if yes, delete the parent as well
+               temp_element_members = child.findall('{' + namespace  + '}' + 'members')
+               if len(temp_element_members) == 0:
+                  print_info("Parent element " + color_string(element_name.text, Color.MAGENTA) + " is empty, removing this as well.")
+                  root.remove(child)
+
+def get_element_local_name(element):
+   match = re.search('\{.*\}(.*)', element.tag)
+   return match.group(1) if match else ''
+
+def get_filename_without_extension(file_name):
+   return file_name.split('.')[0]
 
 def main():
    parser = argparse.ArgumentParser(description='Removes unwanted content from  SF metadata using configuration file.\n' +
@@ -254,7 +307,15 @@ def main():
    if(args.cleanup_config):
       sf_cleanup_config_path = args.cleanup_config
    else:
-      sf_cleanup_config_path = DEFAULT_SF_CLEANUP_JSON_CONFIG
+      sf_cleanup_config_path = SCRIPT_FOLDER_PATH + '/' + CONFIG + '/' + DEFAULT_SF_CLEANUP_JSON_CONFIG
+
+   # default namespace
+   ElementTree.register_namespace('', DEFAULT_NAMESPACE)
+   package_xml_path = args.source + "/package.xml"
+   if os.path.isfile(package_xml_path):
+      package_xml = ElementTree.parse(package_xml_path)
+   else:
+      print_error(package_xml_path + " not found!")
 
    # load sf cleanup  configuration
    sf_cleanup_config = load_config(sf_cleanup_config_path)
@@ -270,6 +331,11 @@ def main():
 
    # remove-element 
    remove_element(sf_cleanup_config, args.source, folder_list)
+
+   if package_xml:   
+      adjust_package_xml(sf_cleanup_config, args.source, folder_list, package_xml, DEFAULT_NAMESPACE)
+      # write out the adjusted package.xml
+      package_xml.write(package_xml_path, encoding="UTF-8", xml_declaration = True)
 
    # remove files and folder (if folder is empty)
    remove_files(sf_cleanup_config, args.source, folder_list)
