@@ -204,7 +204,7 @@ def main():
    else:
       output_path = DEFAULT_OUPTUT_PATH
       
-   cmd = 'git diff ' + str(first_commit_id) + ' ' + str(last_commit_id) + ' | force-dev-tool changeset create ' + branch_name + ' -f -d ' + output_path
+   cmd = 'git diff -w --no-renames ' + str(first_commit_id) + ' ' + str(last_commit_id) + ' | force-dev-tool changeset create ' + branch_name + ' -f -d ' + output_path
    print_info('Running command:\n' + color_string(cmd, Color.BLUE))
    os.chdir(repository_name)
    try:
