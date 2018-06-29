@@ -144,7 +144,7 @@ def main():
 
    parser.add_argument(
         "-c", "--config", dest="config",
-        help="Config file to be used", required=True)
+        help="Config file to be used")
 
    parser.add_argument(
         "--debug-level", dest="debug_level",type=int,
