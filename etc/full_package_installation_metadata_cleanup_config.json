@@ -8,6 +8,11 @@
          },
          {
             "element-name":"userPermissions",
+            "matching":"<name>SendExternalEmailAvailable</name>",
+            "fileMask":".*"
+         },
+         {
+            "element-name":"userPermissions",
             "matching":"<name>SubscribeDashboardToOtherUsers</name>",
             "fileMask":".*"
          },
