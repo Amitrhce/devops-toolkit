@@ -45,7 +45,7 @@
             "package_xml_type":"Flow"
          }
       ],
-      "permissionSets":[
+      "permissionsets":[
          {
             "fileMask":".*",
             "package_xml_type":"PermissionSet"
