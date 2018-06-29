@@ -181,32 +181,53 @@ def check_class_presence(class_list, test_class_list):
 
 def get_list_of_classes(package_xml, class_list, test_class_list):
    test_class_pattern = re.compile(r'^.+_Test')
-
-   with open(package_xml) as package_xml_fd:
-      package_xml_dict = xmltodict.parse(package_xml_fd.read())
-
-   # is types list or dictionary?
-   if isinstance(package_xml_dict['Package']['types'], dict):
-      type_element = package_xml_dict['Package']['types']
-      if type_element['name'] == 'ApexClass':
-         for class_name in type_element['members']:
-            if not re.search(test_class_pattern, class_name):
-               print_info('Adding class into a list of classes: ' + color_string(class_name, Color.MAGENTA))
-               class_list.append(class_name)
-            else:
-               print_info('Adding class into a list of test classes: ' + color_string(class_name, Color.MAGENTA))
-               test_class_list.append(class_name)
-     
-   else:
-      for type_element in package_xml_dict['Package']['types']:
-         if type_element['name'] == 'ApexClass':
-            for class_name in type_element['members']:
-               if not re.search(test_class_pattern, class_name):
-                  print_info('Adding class into a list of classes: ' + color_string(class_name, Color.MAGENTA))
-                  class_list.append(class_name)
-               else:
-                  print_info('Adding class into a list of test classes: ' + color_string(class_name, Color.MAGENTA))
-                  test_class_list.append(class_name)
+   
+   if os.path.isfile(package_xml):
+      with open(package_xml) as package_xml_fd:
+         package_xml_dict = xmltodict.parse(package_xml_fd.read())
+      
+      if 'types' in package_xml_dict['Package']:
+	 # is types list or dictionary?
+	 if isinstance(package_xml_dict['Package']['types'], dict):
+	    type_element = package_xml_dict['Package']['types']
+	    if type_element['name'] == 'ApexClass':
+	       if isinstance(type_element['members'], dict):
+		  class_name = type_element['members']
+		  if not re.search(test_class_pattern, class_name):
+		     print_info('Adding class into a list of classes: ' + color_string(class_name, Color.MAGENTA))
+		     class_list.append(class_name)
+		  else:
+		     print_info('Adding class into a list of test classes: ' + color_string(class_name, Color.MAGENTA))
+		     test_class_list.append(class_name)
+	      
+	       else:
+		  for class_name in type_element['members']:
+		     if not re.search(test_class_pattern, class_name):
+			print_info('Adding class into a list of classes: ' + color_string(class_name, Color.MAGENTA))
+			class_list.append(class_name)
+		     else:
+			print_info('Adding class into a list of test classes: ' + color_string(class_name, Color.MAGENTA))
+			test_class_list.append(class_name)
+	
+	 else:
+	    for type_element in package_xml_dict['Package']['types']:
+	       if type_element['name'] == 'ApexClass':
+		  if isinstance(type_element['members'], dict):
+		     class_name = type_element['members']
+		     if not re.search(test_class_pattern, class_name):
+			print_info('Adding class into a list of classes: ' + color_string(class_name, Color.MAGENTA))
+			class_list.append(class_name)
+		     else:
+			print_info('Adding class into a list of test classes: ' + color_string(class_name, Color.MAGENTA))
+			test_class_list.append(class_name)
+		  else:
+		     for class_name in type_element['members']:
+			if not re.search(test_class_pattern, class_name):
+			   print_info('Adding class into a list of classes: ' + color_string(class_name, Color.MAGENTA))
+			   class_list.append(class_name)
+			else:
+			   print_info('Adding class into a list of test classes: ' + color_string(class_name, Color.MAGENTA))
+			   test_class_list.append(class_name)
    return class_list
 
 def force_login(remote):
