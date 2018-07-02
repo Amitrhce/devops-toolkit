@@ -94,15 +94,19 @@ def build_element_unique_key(element, config, namespace, unmatched_element_count
          for uniqueKey in element_config['uniqueKeys']:
             key_element = element.find('{' + namespace  + '}' + uniqueKey)
             if(key_element is not None and key_element.text):
-               key = element_local_name + '#' + key_element.text
+               if key is None:
+                  key = ''
+               key = key + '#' + element_local_name + '#' + key_element.text
       elif('exclusiveUniqueKeys' in  element_config):
          for exclusiveUniqueKeyList in element_config['exclusiveUniqueKeys']:
             for exlusiveUniqueKey in exclusiveUniqueKeyList:
                key_element = element.find('{' + namespace  + '}' +exlusiveUniqueKey)
                if(key_element is not None and key_element.text):
-                  key = element_local_name + '#' + key_element.text
+                  if key is None:
+                     key = ''
+                  key = key + '#' + element_local_name + '#' + key_element.text
             # we already have a unique key we can return
-            if(key != element_local_name):
+            if(key != None):
                break;
       else:
          # key == element name itself - e.g. userLicense, custom
@@ -136,7 +140,7 @@ def update_base_xml(base_xml, base_xml_dict, element_tree, config, namespace, un
       exists_in_base = key_exists_in_dict(base_xml_dict, child_key)
       if(exists_in_base):
          # check whether key exists and if yes and not equal then update
-         is_equal_to_base = update_element_if_not_equal(child, base_xml_dict[child_key]['element'], config, namespace)
+         is_equal_to_base = elements_are_equal(child, base_xml_dict[child_key]['element'], config, namespace)
          if not is_equal_to_base:
             print('Updating element with key: ' + child_key)
       else:
@@ -155,7 +159,7 @@ def key_exists_in_dict(xml_dict, key):
    else:
       return False
 
-def update_element_if_not_equal(element1, element2, config, namespace):
+def elements_are_equal(element1, element2, config, namespace):
    if(element1 is None or element2 is None):
       return False
 
