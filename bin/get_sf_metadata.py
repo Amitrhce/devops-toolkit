@@ -179,7 +179,7 @@ def main():
          # create package xml
          csv_output = get_csv_output(records_per_items_and_instances[item][instance])
          if args.output:
-            package_xml_path = args.output + '/src'
+            package_xml_path = args.output + '_' + instance  + '/src'
          else:
             package_xml_path = PACKAGES + '/' + item + '_' + instance + '/src'
 
