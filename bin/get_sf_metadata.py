@@ -35,6 +35,9 @@ ORGS_JSON_FILE_PATH = 'config/.orgs.json'
 def is_tool(name):
    return find_executable(name) is not None   
 
+def print_error(message):
+   print color_string(message, Color.RED)
+
 def load_remotes(orgs_json_file_path):
    with open(orgs_json_file_path, 'r') as orgs_json:
       orgs_json_data = json.load(orgs_json)
