@@ -188,9 +188,13 @@ def main():
          
          # retrieve the package
          cmd = 'force-dev-tool retrieve -d ' + package_xml_path + ' ' + instance
-         p = Popen(['force-dev-tool', 'retrieve',  '-d', package_xml_path, instance])
+         p = Popen(['force-dev-tool', 'retrieve',  '-d', package_xml_path, instance], stderr=PIPE)
          #retrieve_stdout = p.communicate(input = csv_output)[0]
-         p.communicate()
+         stderr = p.communicate()
+
+         if stderr:
+            print_error(stderr)
+            sys.exit(1)
 
 '''      
    #for row in csv_reader:
