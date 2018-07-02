@@ -35,6 +35,46 @@ ORGS_JSON_FILE_PATH = 'config/.orgs.json'
 def is_tool(name):
    return find_executable(name) is not None   
 
+class Color:
+    BLUE = '\033[94m'
+    GREEN = '\033[92m'
+    RED = '\033[91m'
+    CYAN = '\033[96m'
+    WHITE = '\033[97m'
+    YELLOW = '\033[93m'
+    MAGENTA = '\033[95m'
+    GREY = '\033[90m'
+    BLACK = '\033[90m'
+    DEFAULT = '\033[99m'
+    ENDC = '\033[0m'
+
+class Format:
+    BOLD = '\033[1m'
+    UNDERLINE = '\033[4m'
+    ENDC = '\033[0m'
+
+def color_string(string, color):
+   if(color == Color.BLUE):
+      return Color.BLUE + string + Color.ENDC
+   elif(color == Color.RED):
+      return Color.RED + string + Color.ENDC
+   elif(color == Color.GREEN):
+      return Color.GREEN + string + Color.ENDC
+   elif(color == Color.CYAN):
+      return Color.CYAN + string + Color.ENDC
+   elif(color == Color.WHITE):
+      return Color.WHITE + string + Color.ENDC
+   elif(color == Color.MAGENTA):
+      return Color.MAGENTA + string + Color.ENDC
+   elif(color == Color.GREY):
+      return Color.GREY + string + Color.ENDC
+   elif(color == Color.BLACK):
+      return Color.BLACK + string + Color.ENDC
+   elif(color == Color.YELLOW):
+      return Color.YELLOW + string + Color.ENDC
+   else:
+      return string
+
 def print_error(message):
    print color_string(message, Color.RED)
 
@@ -193,7 +233,7 @@ def main():
          cmd = 'force-dev-tool retrieve -d ' + package_xml_path + ' ' + instance
          p = Popen(['force-dev-tool', 'retrieve',  '-d', package_xml_path, instance], stderr=PIPE)
          #retrieve_stdout = p.communicate(input = csv_output)[0]
-         stderr = p.communicate()
+         stderr = p.communicate()[1]
 
          if stderr:
             print_error(stderr)
