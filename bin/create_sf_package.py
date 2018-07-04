@@ -146,33 +146,42 @@ def main():
 
       # get a list of added or modified files beginning with "src"
       change_pattern = re.compile("^R[0-9]+$")
-      file_pattern = re.compile("^src.*")
-      if (line_array[0] == 'A' or line_array[0] == 'M' or change_pattern.match(line_array[0])) and file_pattern.match(line_array[1]):
-         print line_array
+      file_pattern = re.compile("^src/.*/.*")
+      filter_out_components = re.compile("^.*\$.*")
+      if (line_array[0] == 'A' or line_array[0] == 'M' or change_pattern.match(line_array[0])) and file_pattern.match(line_array[1]) and not filter_out_components.match(line_array[1]):
+         # print line_array
          if change_pattern.match(line_array[0]):
             # changed component
             salesforce_component_to_be_added = line_array[2].rstrip()
             if salesforce_component_to_be_added not in  added_or_modified:
-               added_or_modified.append('"' + salesforce_component_to_be_added + '"')              
+               if os.path.isfile(salesforce_component_to_be_added):
+                  added_or_modified.append('"' + salesforce_component_to_be_added + '"')
+               else:
+                  print_error(salesforce_component_to_be_added + " doesn't exist!")
          elif line_array[1].rstrip() not in added_or_modified:
             salesforce_component_to_be_added = line_array[1].rstrip()
             if salesforce_component_to_be_added not in  added_or_modified:
-               added_or_modified.append('"' + salesforce_component_to_be_added + '"')
+               if os.path.isfile(salesforce_component_to_be_added):
+                  added_or_modified.append('"' + salesforce_component_to_be_added + '"')
+               else:
+                  print_error(salesforce_component_to_be_added + " doesn't exist!")
 
    #for component in added_or_modified:
    #   print_info('Adding component ' + color_string(component, Color.MAGENTA) + ' to ' + color_string(output_folder, Color.MAGENTA))
-      
-   cmd = "force-dev-tool changeset create " + output_folder + " " + ' '.join([str(x) for x in added_or_modified]) + " -f"
-   print_info("Running command " + color_string(cmd, Color.BLUE))
+   
+   if len(added_or_modified) > 0:   
+      cmd = "force-dev-tool changeset create " + output_folder + " " + ' '.join([str(x) for x in added_or_modified]) + " -f"
+      print_info("Running command " + color_string(cmd, Color.BLUE))
 
-   try:
-      result = subprocess.check_output(cmd, shell=True)
-   except Exception as e:
-      error_message = "Unable to add " + component  + ". If you want to ignore errors during the processing you can run it with --ignore-errors parameter. Please, also use -d parameter for more details"
-      if(not IGNORE_ERRORS):
-         raise RuntimeError(error_message)
-      else:
-         print_error(error_message)
-
+      try:
+         result = subprocess.check_output(cmd, shell=True)
+      except Exception as e:
+         error_message = "Unable to add components. If you want to ignore errors during the processing you can run it with --ignore-errors parameter. Please, also use -d parameter for more details components. " + str(e)
+         if(not IGNORE_ERRORS):
+            raise RuntimeError(error_message)
+         else:
+            print_error(error_message)
+   else:
+      print_info("There are no components to be added.")
 if __name__ == "__main__":
    main()
