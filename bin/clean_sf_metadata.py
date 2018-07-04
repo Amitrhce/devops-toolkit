@@ -314,10 +314,10 @@ def main():
    package_xml_path = args.source + "/package.xml"
 
    package_xml = None   
-   #if os.path.isfile(package_xml_path):
-   #   package_xml = ElementTree.parse(package_xml_path)
-   #else:
-      #print_error(package_xml_path + " not found!")
+   if os.path.isfile(package_xml_path):
+      package_xml = ElementTree.parse(package_xml_path)
+   else:
+      print_error(package_xml_path + " not found!")
 
    # load sf cleanup  configuration
    sf_cleanup_config = load_config(sf_cleanup_config_path)
