@@ -93,10 +93,11 @@ def load_config(config_file_path):
    return json_data
 
 def get_folder_list(path):
-   folder_list = []
-   for name in os.listdir(path):
-      if os.path.isdir(path + '/' + name):
-          folder_list.append(name)
+   folder_list = [] 
+   if os.path.isdir(path):
+      for name in os.listdir(path):
+         if os.path.isdir(path + '/' + name):
+            folder_list.append(name)
    return folder_list
 
 def get_file_list(path, fileMask = '.*'):
