@@ -154,6 +154,13 @@ def get_csv_output(rows):
    write_csv_output(rows, csv_temp_variable)
    return csv_temp_variable.getvalue()
 
+def filter_blank_lines(text_block):
+    ret_value = ""
+    for line in text_block.split("\n"):
+        if line.strip() != '':
+            ret_value += line.strip() + '\n'
+    return ret_value
+
 def main():
    parser = argparse.ArgumentParser(description='Get all SF metadata for given backlog items\n' +
                                                 'Example:\n' +
@@ -190,6 +197,10 @@ def main():
    parser.add_argument(
         "--debug-level", dest="debug_level",type=int,
         help="Debug level from {1, 2}")
+
+   parser.add_argument(
+        "--message", dest="send_message",
+        help="Sends the message with validation result", action="store_true")
 
    parser.add_argument(
         "items", nargs="*",
@@ -255,12 +266,20 @@ def main():
          p.communicate()
 
          if args.target:
-            p = Popen(['force-dev-tool', 'validate',  '-d', package_xml_path, args.target])
+            p = Popen(['force-dev-tool', 'deploy', '-c',  '-d', package_xml_path, args.target])
             p.communicate()
             
          if args.test:
-            p = Popen(['get_code_coverage.py', '-t',  instance, '-p', package_xml_path + '/package.xml', '-d'])
-            p.communicate()
+            p = Popen(['get_code_coverage.py', '-t',  instance, '-p', package_xml_path + '/package.xml', '-d'], stderr=PIPE, stdout=PIPE)
+            output,error_output = p.communicate()
+            if output:
+               print output.strip()
+            if error_output:
+               if args.send_message:
+                  print error_output.strip()
+                  p = Popen(['send_bulk_message.py', '-m', "Test results:\n" + error_output])
+                  p = Popen(['force-dev-tool', 'deploy', '-c',  '-d', package_xml_path, args.target])
+                  
 
 '''      
    #for row in csv_reader:
