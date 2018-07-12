@@ -82,7 +82,7 @@ def main():
 
    parser.add_argument(
         "-m", "--message", dest="message",
-        help="Source folder", required=True)
+        help="Message to be sent", required=True)
 
    parser.add_argument(
         "--debug-level", dest="debug_level",type=int,
