@@ -83,7 +83,7 @@ def get_element_local_name(element):
 
 def write_xml(element_tree, file_path, namespaces):
    element_tree.write(file_path, xml_declaration=True, encoding="utf-8", method="xml", default_namespace=namespaces['default'])
-
+'''
 def build_element_unique_key(element, config, namespace, unmatched_element_count = None):
    # default value
    element_local_name = get_element_local_name(element)
@@ -119,12 +119,46 @@ def build_element_unique_key(element, config, namespace, unmatched_element_count
    if key == None:
       print "Not configured: " + element_local_name
    return key
+'''
+
+def build_element_unique_key(element, config, namespace):
+   config_missing_count = 0
+   # default value
+   element_local_name = get_element_local_name(element)
+   key = None
+   if element_local_name in config:
+      element_config = config[element_local_name]
+      if('uniqueKeys' in element_config):
+         for uniqueKey in element_config['uniqueKeys']:
+            key_element = element.find('{' + namespace  + '}' + uniqueKey)
+            if(key_element is not None and key_element.text):
+               if key is None:
+                  key = ''
+               key = key + "#" + element_local_name + '#' + key_element.text
+      elif('exclusiveUniqueKeys' in  element_config):
+         for exclusiveUniqueKeyList in element_config['exclusiveUniqueKeys']:
+            for exlusiveUniqueKey in exclusiveUniqueKeyList:
+               key_element = element.find('{' + namespace  + '}' +exlusiveUniqueKey)
+               if(key_element is not None and key_element.text):
+                  if key is None:
+                     key = ''
+                  key = key + "#" + element_local_name + '#' + key_element.text
+            # we already have a unique key we can return
+            if(key != element_local_name):
+               break;
+
+   if(key is None):
+     key = get_element_local_name(element) + "#" + str(config_missing_count) + "#"
+     config_missing_count = config_missing_count + 1
+
+   return key
 
 def load_base_xml_file(element_tree, config, namespace, unmatched_element_count):
    xml_dict = {}
    root = element_tree.getroot()
    for child in root:
-      child_key = build_element_unique_key(child, config, namespace, unmatched_element_count)
+      #child_key = build_element_unique_key(child, config, namespace, unmatched_element_count)
+      child_key = build_element_unique_key(child, config, namespace)
 
       # if child_key is None then ignore the element
       if(child_key is not None):
@@ -136,13 +170,16 @@ def update_base_xml(base_xml, base_xml_dict, element_tree, config, namespace, un
    xml_dict = {}
    root = element_tree.getroot()
    for child in root:
-      child_key = build_element_unique_key(child, config, namespace, unmatched_element_count)
+      #child_key = build_element_unique_key(child, config, namespace, unmatched_element_count)
+      child_key = build_element_unique_key(child, config, namespace)
+
       exists_in_base = key_exists_in_dict(base_xml_dict, child_key)
       if(exists_in_base):
          # check whether key exists and if yes and not equal then update
          is_equal_to_base = elements_are_equal(child, base_xml_dict[child_key]['element'], config, namespace)
          if not is_equal_to_base:
             print('Updating element with key: ' + child_key)
+            base_xml_dict[child_key]['element'].text = child.text
       else:
          # default value
          # add new value if doesn't exist
@@ -180,9 +217,10 @@ def elements_are_equal(element1, element2, config, namespace):
       return True
    else:
       # leaves
-      element1_text_temp = element1.text
-      element1.text = element2.text
-      return element1_text_temp == element2.text
+      #element1_text_temp = element1.text
+      #element1.text = element2.text
+      #return element1_text_temp == element2.text
+      return element1.text == element2.text
 
 def get_tag(element):
    return element.tag
