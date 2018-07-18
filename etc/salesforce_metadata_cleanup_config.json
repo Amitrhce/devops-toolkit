@@ -8,6 +8,11 @@
          },
          {
             "element-name":"userPermissions",
+            "matching":"<name>SendExternalEmailAvailable</name>",
+            "fileMask":".*"
+         },
+         {
+            "element-name":"userPermissions",
             "matching":"<name>SubscribeDashboardToOtherUsers</name>",
             "fileMask":".*"
          },
@@ -20,6 +25,26 @@
             "element-name":"userPermissions",
             "matching":"<name>AssignUserToSkill</name>",
             "fileMask":".*"
+         },
+         {
+            "element-name":"userPermissions",
+            "matching":"<name>ViewCaseInteraction</name>",
+            "fileMask":".*"
+         },
+         {
+            "element-name":"userPermissions",
+            "matching":"<name>ManageSandboxes</name>",
+            "fileMask":".*"
+         },
+         {
+            "element-name":"userPermissions",
+            "matching":"<name>SendExternalEmailAvailable</name>",
+            "fileMask":".*"
+         },
+         {
+            "element-name":"tabVisibilities",
+            "matching":"<tab>standard-QuickText</tab>",
+            "fileMask":".*"
          }
       ]
    },
@@ -28,10 +53,5 @@
    "remove-element":{
    },
    "remove-file":{
-      "connectedApps":[
-         {
-            "fileMask":".*"
-         }
-      ]
    }
 }
