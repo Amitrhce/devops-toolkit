@@ -55,6 +55,7 @@ def getApexSendBulkChatterCommentAnonymousApex(message, items):
 
 def runAnonymousApex(apex, environment):
    cmd = 'echo "' + apex + '" | force-dev-tool execute "' + environment + '"'
+   print cmd
    try:
       result = subprocess.check_output(cmd, shell=True)
    except subprocess.CalledProcessError as e:
@@ -63,7 +64,8 @@ def runAnonymousApex(apex, environment):
       result = e.output
    return result
 
-def getApexUpdateValidationStatus(status, metadata, items):
+#def getApexUpdateValidationStatus(status, metadata, items):
+def getApexUpdateValidationStatus(status, items):
    counter = 0
    '''
    if metadata == 'vlocity':
@@ -132,7 +134,8 @@ def main():
    if(len(args.items) == 0):
       raise ValueError("Backlog item list is empty, please specify at least one backlog item which you want to update!")
 
-   apex = getApexUpdateValidationStatus(args.status, args.metadata, args.items)
+   #apex = getApexUpdateValidationStatus(args.status, args.metadata, args.items)
+   apex = getApexUpdateValidationStatus(args.status, args.items)
    if(args.target):
       print runAnonymousApex(apex, args.target)
    else:
