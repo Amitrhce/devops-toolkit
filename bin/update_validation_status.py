@@ -65,11 +65,13 @@ def runAnonymousApex(apex, environment):
 
 def getApexUpdateValidationStatus(status, metadata, items):
    counter = 0
-   
+   '''
    if metadata == 'vlocity':
       cmd = "DevOpsUtils.updateBacklogItemVlocityValidationStatus(new Set<String>{"
    else:
       cmd = "DevOpsUtils.updateBacklogItemSalesforceValidationStatus(new Set<String>{"
+   '''
+   cmd = "DevOpsUtils.updateBacklogItemValidationStatus(new Set<String>{"
 
    for item in items:
       if counter == 0:
@@ -101,9 +103,9 @@ def main():
         "-s", "--status", dest="status",
         help="Validation status {'Passed', 'Failed'}", required=True)
 
-   parser.add_argument(
-        "-m", "--metadata", dest="metadata",
-        help="Metadata from {'vlocity', 'sf'}", required=True)
+   #parser.add_argument(
+   #     "-m", "--metadata", dest="metadata",
+   #     help="Metadata from {'vlocity', 'sf'}", required=True)
 
    parser.add_argument(
         "--debug-level", dest="debug_level",type=int,
@@ -124,8 +126,8 @@ def main():
    if(args.status not in ['Passed', 'Failed']):
       raise ValueError("Validation status only options are 'Passed' or 'Failed'!")
 
-   if(args.metadata not in ['vlocity', 'sf']):
-      raise ValueError("Metadata type possible values are only 'vlocity' and 'sf'!")
+   #if(args.metadata not in ['vlocity', 'sf']):
+   #   raise ValueError("Metadata type possible values are only 'vlocity' and 'sf'!")
 
    if(len(args.items) == 0):
       raise ValueError("Backlog item list is empty, please specify at least one backlog item which you want to update!")
