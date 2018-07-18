@@ -409,6 +409,7 @@ def main():
       retrieve_vlocity_metadata(vlocity_yaml_file_path, remotes, row['Environment__c'], row, retrieved_components, output_folder)
       
    processed_omniscripts = {}
+   #print(retrieved_components)
    if(check_omniscript_conflicts(retrieved_components, processed_omniscripts)):
       print_conflicted_omniscripts(processed_omniscripts)
 

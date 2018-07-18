@@ -10,6 +10,7 @@ from argparse import RawTextHelpFormatter
 import json
 import subprocess
 from git import *
+from distutils.dir_util import copy_tree, remove_tree
 
 '''
 import json
@@ -134,18 +135,12 @@ def main():
         help="Source folder")
 
    parser.add_argument(
-        "-r", "--repository", dest="repository",
-        help="Repository")
-
-   parser.add_argument(
         "-o", "--output", dest="output",
         help="Output folder")
 
-   '''
    parser.add_argument(
         "-t", "--target", dest="target",
-        help="Target environment", required=True)
-   '''
+        help="Target environment")
 
    parser.add_argument(
         "--debug-level", dest="debug_level",type=int,
@@ -160,15 +155,16 @@ def main():
       this.DEBUG_LEVEL = 2
 
    repository_name = ''
-   if args.repository:
-      repository_name = args.repository
-   else:
-      repository_name = DEFAULT_REPOSITORY
+   #if args.repository:
+   #   repository_name = args.repository
+   #else:
+
+   repository_name = os.getcwd()
 
    try:
       repo = Repo(repository_name)
    except:
-      print_error('Please, make sure ' + CURRENT_WORKING_PATH + '/' + repository_name + ' exists!')
+      print_error('Please, make sure ' + repository_name + ' is a repository!')
       sys.exit(1)
 
    o = repo.remotes.origin
@@ -183,9 +179,11 @@ def main():
    if args.branch:
       branch_name = args.branch
    else:
-      branch_name = DEFAULT_BRANCH
+      #branch_name = DEFAULT_BRANCH
+      # active branch
+      branch_name = repo.active_branch.name
 
-   print_info(color_string('Retrieving a list of commits for repository ' + repository_name + ' and branch ' + branch_name, Color.GREEN)) 
+   print_info(color_string('Retrieving a list of commits for repository ', Color.GREEN) + color_string(repository_name, Color.BLUE) + color_string(' and branch ', Color.GREEN) + color_string(branch_name, Color.BLUE)) 
    try: 
       commits = get_commits(repo, branch_name)
    except:
@@ -202,19 +200,85 @@ def main():
    if(args.output):
       output_path = args.output
    else:
-      output_path = DEFAULT_OUPTUT_PATH
-      
-   cmd = 'git diff -w --no-renames ' + str(first_commit_id) + ' ' + str(last_commit_id) + ' | force-dev-tool changeset create ' + branch_name + ' -f -d ' + output_path
+      output_path = DEFAULT_OUPTUT_PATH + '/' + branch_name
+
+   # src folder added by force-dev-tool
+   sf_output_path = output_path + "/src"
+   vlocity_output_path = output_path + "/vlocity"
+
+   #print_info("Changing folder to " + color_string(repository_name, Color.BLUE))
+   #os.chdir(repository_name)
+     
+   cmd = 'git diff -w --no-renames ' + str(first_commit_id) + ' ' + str(last_commit_id) + ' | force-dev-tool changeset create src -f -d ' + output_path
    print_info('Running command:\n' + color_string(cmd, Color.BLUE))
-   os.chdir(repository_name)
    try:
       result = subprocess.check_output(cmd, shell=True)
    except subprocess.CalledProcessError as e:
       raise RuntimeError("(Command: '{}' returned error (code {}).".format(e.cmd, e.returncode))
       result = e.output
-   os.chdir('..')   
 
-   print result
+   print_info("Changing folder to " + color_string("..", Color.BLUE))
+   #os.chdir('..')
+
+   # remove destructive changes
+   destructive_changes_path = sf_output_path + "/destructiveChanges.xml"
+   if os.path.isfile(destructive_changes_path):
+      print_info("Removing " + destructive_changes_path)
+      os.remove(destructive_changes_path)
+
+   # clean sf package before the installation
+   cmd = 'clean_sf_metadata.py -s ' + sf_output_path  + ' -d -c ' + SCRIPT_FOLDER_PATH + "/" + CONFIG + '/full_package_installation_metadata_cleanup_config.json'
+   print_info("Cleaning package")
+   print_info(color_string(cmd, Color.BLUE))
+   try:
+      result = subprocess.check_output(cmd, shell=True)
+   except subprocess.CalledProcessError as e:
+      raise RuntimeError("(Command: '{}' returned error (code {}).".format(e.cmd, e.returncode))
+      result = e.output
+
+   print_info(result)
+
+   # vlocity metadata
+   vlocity_folder = repository_name + '/vlocity'
+   if os.path.isdir(vlocity_folder):
+      if os.path.isdir(vlocity_output_path):
+         # remove folder
+         print_info("Removing existing folder " + color_string(vlocity_output_path, Color.BLUE))
+         remove_tree(vlocity_output_path)
+      try:
+         copy_tree(vlocity_folder, vlocity_output_path)
+         print_info("Folder " + color_string(vlocity_folder, Color.BLUE) + " copied successfuly to " + color_string(output_path + "/vlocity", Color.BLUE))
+      except Exception as e:
+         error_message = "Unable to copy folder " + vlocity_folder + " to the destination folder " + "../" + output_path + ": " + e.message
+         if(not IGNORE_ERRORS):
+            raise RuntimeError(error_message)
+         else:
+            print_error(error_message)
+
+   if args.target:
+      # deploy sf metadata
+      cmd = 'force-dev-tool deploy -d ' + sf_output_path  + ' ' + args.target
+      print_info("Deploying sf components")
+      print_info(color_string(cmd, Color.BLUE))
+      try:
+         result = subprocess.check_output(cmd, shell=True)
+      except subprocess.CalledProcessError as e:
+         raise RuntimeError("(Command: '{}' returned error (code {}).".format(e.cmd, e.returncode))
+         result = e.output
+
+      print_info(result)
+
+      # deploy vlocity metadata
+      cmd = 'echo ' + output_path  + ' | deploy_vlocity_metadata.py -d -t ' + args.target
+      print_info("Deploying vlocity components")
+      print_info(color_string(cmd, Color.BLUE))
+      try:
+         result = subprocess.check_output(cmd, shell=True)
+      except subprocess.CalledProcessError as e:
+         raise RuntimeError("(Command: '{}' returned error (code {}).".format(e.cmd, e.returncode))
+         result = e.output
+
+      print_info(result)
 
 if __name__ == "__main__":
    main()

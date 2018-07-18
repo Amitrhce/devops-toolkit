@@ -171,7 +171,7 @@ def main():
       folder_config = get_sf_folder_config(name, sf_sync_config)
       if folder_config is not None and 'synchronization' in folder_config and folder_config['synchronization'] == 'on':
          if 'preprocessing' in folder_config and folder_config['preprocessing'] == 'on':
-            # run preprocessing
+            # TODO run preprocessing)            
             pass
          if 'fileReplace' in folder_config and folder_config['fileReplace'] == 'off':
             # xml merge

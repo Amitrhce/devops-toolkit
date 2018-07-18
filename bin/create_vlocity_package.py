@@ -1,6 +1,7 @@
 #!/usr/bin/env python
 
 # author        : Stepan Ruzicka
+# e-mail	: stepan.ruzicka@gmail.com
 # date          : 2018.05.24
 
 import sys
@@ -9,7 +10,6 @@ import argparse
 from argparse import RawTextHelpFormatter
 import json
 import subprocess
-from git import *
 import re
 from distutils.dir_util import copy_tree
 
@@ -151,6 +151,11 @@ def main():
             vlocity_folder_to_be_copied = get_parent_folder(line_array[1].rstrip())
             if vlocity_folder_to_be_copied not in  added_or_modified:
                added_or_modified.append(vlocity_folder_to_be_copied)
+      elif(pattern.match(line_array[0])):
+         if line_array[2].rstrip() not in added_or_modified:
+            vlocity_folder_to_be_copied = get_parent_folder(line_array[2].rstrip())
+            if vlocity_folder_to_be_copied not in  added_or_modified:
+               added_or_modified.append(vlocity_folder_to_be_copied)            
 
    for folder in added_or_modified:
       parent_folder = get_parent_folder(folder)
@@ -159,7 +164,7 @@ def main():
       try:
          copy_tree(folder, destination_folder_path)
       except Exception as e:
-         error_message = "Unable copy folder " + folder  + ". If you want to ignore errors during the processing you can run it with --ignore-errors parameter. Please, also use -d parameter for more details"
+         error_message = "Unable copy folder " + folder  + ". If you want to ignore errors during the processing you can run it with --ignore-errors parameter. Please, also use -d parameter for more details: " + e.message
          if(not IGNORE_ERRORS):
             raise RuntimeError(error_message)
          else:

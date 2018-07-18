@@ -30,6 +30,11 @@
             "element-name":"userPermissions",
             "matching":"<name>ManageSandboxes</name>",
             "fileMask":".*"
+         },
+         {
+            "element-name":"userPermissions",
+            "matching":"<name>ChangeDashboardColors</name>",
+            "fileMask":".*"
          }
       ]
    },
