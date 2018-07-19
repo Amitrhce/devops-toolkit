@@ -227,7 +227,7 @@ def main():
       os.remove(destructive_changes_path)
 
    # clean sf package before the installation
-   cmd = 'clean_sf_metadata.py -s ' + sf_output_path  + ' -d -c ' + SCRIPT_FOLDER_PATH + "/" + CONFIG + '/full_package_installation_metadata_cleanup_config.json'
+   cmd = SCRIPT_FOLDER_PATH + '/clean_sf_metadata.py -s ' + sf_output_path  + ' -d -c ' + SCRIPT_FOLDER_PATH + "/" + CONFIG + '/full_package_installation_metadata_cleanup_config.json'
    print_info("Cleaning package")
    print_info(color_string(cmd, Color.BLUE))
    try:
@@ -269,7 +269,7 @@ def main():
       print_info(result)
 
       # deploy vlocity metadata
-      cmd = 'echo ' + output_path  + ' | deploy_vlocity_metadata.py -d --ignore-errors -t ' + args.target
+      cmd = 'echo ' + output_path  + ' | ' + SCRIPT_FOLDER_PATH + '/ + deploy_vlocity_metadata.py -d --ignore-errors -t ' + args.target
       print_info("Deploying vlocity components")
       print_info(color_string(cmd, Color.BLUE))
       try:
