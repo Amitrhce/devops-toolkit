@@ -269,7 +269,7 @@ def main():
       print_info(result)
 
       # deploy vlocity metadata
-      cmd = 'echo ' + output_path  + ' | ' + SCRIPT_FOLDER_PATH + '/ + deploy_vlocity_metadata.py -d --ignore-errors -t ' + args.target
+      cmd = 'echo ' + output_path  + ' | ' + SCRIPT_FOLDER_PATH + '/deploy_vlocity_metadata.py -d --ignore-errors -t ' + args.target
       print_info("Deploying vlocity components")
       print_info(color_string(cmd, Color.BLUE))
       try:
