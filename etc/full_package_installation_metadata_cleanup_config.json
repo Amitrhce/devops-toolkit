@@ -60,6 +60,12 @@
             "fileMask":".*",
             "package_xml_type":"CustomSite"
          }
+      ],
+      "networks":[
+         {
+            "fileMask":".*",
+            "package_xml_type":"Network"
+         }
       ]
    }
 }
