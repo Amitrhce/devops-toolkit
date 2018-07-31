@@ -49,12 +49,6 @@
             "package_xml_type":"ConnectedApp"
          }
       ],
-      "flows":[
-         {
-            "fileMask":".*",
-            "package_xml_type":"Flow"
-         }
-      ],
       "permissionsets":[
          {
             "fileMask":".*",
