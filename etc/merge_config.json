@@ -153,6 +153,17 @@
             "unique",
             "valueSet"
          ]
+      },
+      "validationRules":{
+         "uniqueKeys":[
+            "fullName"
+          ],
+          "equalKeys":[
+             "description",
+             "errorConditionFormula",
+             "errorDisplayField",
+             "errorMessage"
+          ]
       }
    },
    "permissionsets":{

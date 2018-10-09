@@ -53,5 +53,17 @@
    "remove-element":{
    },
    "remove-file":{
+       "pages":[
+         {
+            "fileMask":"HubSpot.*",
+            "package_xml_type":"ApexPage"
+         }
+      ],
+      "classes":[
+         {
+            "fileMask":"HubSpot.*",
+            "package_xml_type":"ApexClass"
+         }
+      ]
    }
 }

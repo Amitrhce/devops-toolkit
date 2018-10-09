@@ -218,10 +218,10 @@ def remove_files(sf_cleanup_config, path, folder_list):
                         print_error(error_message)
                
                # if there is not file left in the folder then delete the folder as well
-               if 'fileMask' in rule:
-                  file_list = get_file_list(path + "/" + folder_name, rule['fileMask'])
-               else:
-                  file_list = get_file_list(path + "/" + folder_name)
+               #if 'fileMask' in rule:
+                  #file_list = get_file_list(path + "/" + folder_name, rule['fileMask'])
+               #else:
+               file_list = get_file_list(path + "/" + folder_name)
  
                if len(file_list) == 0:
                   print_info("Folder is empty - removing folder: " + color_string(path + "/" + folder_name, Color.MAGENTA))

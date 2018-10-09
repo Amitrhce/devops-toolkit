@@ -66,6 +66,18 @@
             "fileMask":".*",
             "package_xml_type":"Network"
          }
+      ],
+      "pages":[
+         {
+            "fileMask":"HubSpot.*",
+            "package_xml_type":"ApexPage"
+         }
+      ],
+      "classes":[
+         {
+            "fileMask":"HubSpot.*",
+            "package_xml_type":"ApexClass"
+         }
       ]
    }
 }

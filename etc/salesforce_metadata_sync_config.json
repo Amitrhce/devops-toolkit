@@ -160,7 +160,7 @@
       "preprocessing":"off"
    },
    "email":{
-      "synchronization":"off",
+      "synchronization":"on",
       "fileReplace":"on",
       "preprocessing":"off"
    },
@@ -185,11 +185,6 @@
       "preprocessing":"off"
    },
    "flows":{
-      "synchronization":"off",
-      "fileReplace":"on",
-      "preprocessing":"off"
-   },
-   "globalValueSets":{
       "synchronization":"off",
       "fileReplace":"on",
       "preprocessing":"off"
@@ -375,7 +370,7 @@
       "preprocessing":"off"
    },
    "workflows":{
-      "synchronization":"off",
+      "synchronization":"on",
       "fileReplace":"on",
       "preprocessing":"off"
    }
