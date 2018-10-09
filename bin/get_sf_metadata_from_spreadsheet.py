@@ -291,7 +291,7 @@ def main():
             if os.path.isdir(package_xml_path):
                shutil.rmtree(package_xml_path)
 
-            p = Popen(['create_package_xml.sh', '-o', package_xml_path + '/package.xml'], stdout=PIPE, stdin=PIPE, stderr=STDOUT) 
+            p = Popen([SCRIPT_FOLDER_PATH + '/create_package_xml.sh', '-o', package_xml_path + '/package.xml'], stdout=PIPE, stdin=PIPE, stderr=STDOUT) 
             create_package_stdout = p.communicate(input = csv_output)[0]  
 
             # retrieve the package
@@ -306,7 +306,7 @@ def main():
                break
 
             print "Running cleanup of directory " + package_xml_path
-            p = Popen(['clean_sf_metadata.py', '-s', package_xml_path])
+            p = Popen([SCRIPT_FOLDER_PATH + 'clean_sf_metadata.py', '-s', package_xml_path])
             p.communicate()
 
             if args.target:
