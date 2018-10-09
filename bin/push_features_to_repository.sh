@@ -3,7 +3,7 @@
 RED='\033[0;31m'
 NC='\033[0m' # No Color
 
-SCRIPT_PATH="${BASH_SOURCE[0]}"
+SCRIPT_PATH=`dirname $0`
 
 # A POSIX variable
 OPTIND=1         # Reset in case getopts has been used previously in the shell.
