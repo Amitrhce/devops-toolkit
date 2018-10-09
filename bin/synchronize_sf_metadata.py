@@ -98,7 +98,7 @@ def synchronize_files_in_folders(source_folder_path, destination_folder_path, me
       destination_file = destination_folder_path + '/' + file_name
       if file_name in destination_folder_files:
          # run update_xml.py script
-         cmd = 'update_xml.py -d -m ' + metadata_type + ' "' + destination_file + '" "' + source_file + '"'
+         cmd = SCRIPT_FOLDER_PATH + '/update_xml.py -d -m ' + metadata_type + ' "' + destination_file + '" "' + source_file + '"'
          try:
             result = subprocess.check_output(cmd, shell=True)
          except subprocess.CalledProcessError as e:
