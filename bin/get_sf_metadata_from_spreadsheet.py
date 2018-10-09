@@ -306,7 +306,7 @@ def main():
                break
 
             print "Running cleanup of directory " + package_xml_path
-            p = Popen([SCRIPT_FOLDER_PATH + 'clean_sf_metadata.py', '-s', package_xml_path])
+            p = Popen([SCRIPT_FOLDER_PATH + '/clean_sf_metadata.py', '-s', package_xml_path])
             p.communicate()
 
             if args.target:
