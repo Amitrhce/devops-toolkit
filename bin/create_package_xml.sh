@@ -17,7 +17,7 @@ PARENT_COMPONENT_CSV="\"alm_pm2__Component__r.alm_pm2__Parent_Component__r.Name\
 PARENT_COMPONENT_TYPE="\"alm_pm2__Component__r.alm_pm2__Parent_Component__r.alm_pm2__Type__c\""
 
 # Default components which should be automaticaally added to the output JSON
-version=41.0
+version=43.0
 
 DEFAULT_COMPONENTS[0]="GfK Client Solutions","Profile","",""
 DEFAULT_COMPONENTS[1]="GfK Customer Admin Team","Profile","",""
