@@ -140,6 +140,7 @@ def translate_output(rows):
       item.pop('Item Type')
       item.pop('E-mail')
       item.pop('Branch Name')
+      item.pop('Dependency')
 
    return rows
 
