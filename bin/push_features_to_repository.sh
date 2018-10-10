@@ -58,10 +58,6 @@ for i in `find packages -type d | egrep -e "packages\/(defect|feature)\/SFCRM-[0
      git branch -D $branch_type/$branch_name
   fi
 
-  if [ ! -z $existing_remote_branch ]; then
-     git push origin --delete $branch_type/$branch_name
-  fi
-
   git checkout -B $branch_type/$branch_name
   commit_message="Initial commit"
 
@@ -94,6 +90,10 @@ for i in `find packages -type d | egrep -e "packages\/(defect|feature)\/SFCRM-[0
   git add src
 
   if [ ! -z "$added_changes" ]; then
+    if [ ! -z $existing_remote_branch ]; then
+       git push origin --delete $branch_type/$branch_name
+    fi
+
     echo "Commiting changes to $branch_type/$branch_name"
     git commit -m "$commit_message to $branch_name"
     echo "Pushing $branch_type/$branch_name"
