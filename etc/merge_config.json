@@ -151,7 +151,8 @@
             "trackHistory",
             "type",
             "unique",
-            "valueSet"
+            "valueSet",
+            "length"
          ]
       },
       "validationRules":{
