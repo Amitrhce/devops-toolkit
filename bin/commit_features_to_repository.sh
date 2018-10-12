@@ -91,18 +91,18 @@ for i in `find packages -type d | egrep -e "packages\/(defect|feature)\/SFCRM-[0
 
   if [ ! -z "$added_changes" ]; then
     if [ ! -z $existing_remote_branch ]; then
-       git push origin --delete $branch_type/$branch_name
+       #git push origin --delete $branch_type/$branch_name
     fi
 
     echo "Commiting changes to $branch_type/$branch_name"
     git commit -m "$commit_message to $branch_name"
-    echo "Pushing $branch_type/$branch_name"
+    #echo "Pushing $branch_type/$branch_name"
     #if [ -z $existing_local_branch ] && [ -z $existing_remote_branch ]; then
     #   git push --set-upstream origin $branch_type/$branch_name
     #else
     #   git push
     #fi
-    git push --set-upstream origin $branch_type/$branch_name
+    #git push --set-upstream origin $branch_type/$branch_name
   fi
 
   cd $deployment_path
