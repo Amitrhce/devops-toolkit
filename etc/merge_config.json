@@ -155,6 +155,17 @@
             "length"
          ]
       },
+      "fieldSets":{
+         "uniqueKeys":[
+            "fullName"
+         ],
+         "equalKeys":[
+            "description",
+            "label",
+            "displayedFields"
+         ]
+      },
+
       "validationRules":{
          "uniqueKeys":[
             "fullName"
