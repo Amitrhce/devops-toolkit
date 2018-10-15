@@ -11,6 +11,7 @@ import json
 import subprocess
 import re
 import xml.etree.ElementTree as ElementTree
+import shutil
 
 # script context variables
 SCRIPT_FOLDER_PATH = os.path.dirname(os.path.realpath(__file__))
@@ -225,7 +226,7 @@ def remove_files(sf_cleanup_config, path, folder_list):
  
                if len(file_list) == 0:
                   print_info("Folder is empty - removing folder: " + color_string(path + "/" + folder_name, Color.MAGENTA))
-                  os.rmdir(path + "/" + folder_name)
+                  shutil.rmtree(path + "/" + folder_name)
 
 def adjust_package_xml(sf_cleanup_config, path, folder_list, package_xml, namespace):
     if 'remove-file' in sf_cleanup_config:
