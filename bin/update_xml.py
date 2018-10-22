@@ -1,27 +1,3 @@
-# On branch master
-# Changes to be committed:
-#   (use "git reset HEAD <file>..." to unstage)
-#
-#	modified:   bin/update_xml.py
-#	modified:   etc/merge_config.json
-#
-# Changes not staged for commit:
-#   (use "git add <file>..." to update what will be committed)
-#   (use "git checkout -- <file>..." to discard changes in working directory)
-#
-#	modified:   bin/update_xml.py
-#	modified:   etc/full_package_installation_metadata_cleanup_config.json
-#	modified:   etc/merge_config.json
-#	modified:   etc/salesforce_metadata_sync_config.json
-#
-# Untracked files:
-#   (use "git add <file>..." to include in what will be committed)
-#
-#	backup/
-#	client_secret.json
-#	etc/salesforce_feature_metadata_cleanup.json
-#	full_package_installation_metadata_cleanup_config.json
-[cloud_user@mopdcy405166 devops-toolkit]$ cat bin/update_xml.py
 #!/usr/bin/env python
 
 # author        : Stepan Ruzicka
