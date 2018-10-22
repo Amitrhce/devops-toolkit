@@ -39,13 +39,10 @@
          ]
       },
       "layoutAssignments":{
-         "exclusiveUniqueKeys":[
-            [
-               "recordType"
-            ],
-            [
-               "layout"
-            ]
+         "useParentForPrimaryKey":"-",
+         "uniqueKeys":[
+            "layout",
+            "recordType"
          ],
          "equalKeys":[
             "layout",
@@ -136,6 +133,54 @@
          ]
       }
    },
+   "workflows":{
+      "alerts":{
+         "uniqueKeys":[
+            "fullName"
+         ],
+         "equalKeys":[
+            "description",
+            "protected",
+            "senderType",
+            "template"
+         ]
+      },
+      "fieldUpdates":{
+         "uniqueKeys":[
+            "fullName"
+         ],
+         "equalKeys":[
+            "field",
+            "name",
+            "notifyAssignee",
+            "operation",
+            "protected"
+         ]
+      },
+      "rules":{
+         "uniqueKeys":[
+            "fullName"
+         ],
+         "equalKeys":[
+            "active",
+            "triggerType"
+         ]
+      },
+      "tasks":{
+         "uniqueKeys":[
+            "fullName"
+         ],
+         "equalKeys":[
+            "description",
+            "dueDateOffset",
+            "notifyAssignee",
+            "priority",
+            "pritected",
+            "status",
+            "subject"
+         ]
+      }
+   },
    "objects":{
       "fields":{
          "uniqueKeys":[
@@ -152,7 +197,8 @@
             "type",
             "unique",
             "valueSet",
-            "length"
+            "length",
+            "inlineHelpText"
          ]
       },
       "fieldSets":{
@@ -176,7 +222,20 @@
              "errorDisplayField",
              "errorMessage"
           ]
-      }
+      },
+
+      "compactLayouts": {
+         "uniqueKeys":[
+             "fullName"
+         ],
+         "equalKeys":[
+            "fullName",
+            "fields",
+            "label"
+         ]
+      },
+
+      "compactLayoutAssignment": []
    },
    "permissionsets":{
       "fieldPermissions":{

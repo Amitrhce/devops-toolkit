@@ -1,3 +1,27 @@
+# On branch master
+# Changes to be committed:
+#   (use "git reset HEAD <file>..." to unstage)
+#
+#	modified:   bin/update_xml.py
+#	modified:   etc/merge_config.json
+#
+# Changes not staged for commit:
+#   (use "git add <file>..." to update what will be committed)
+#   (use "git checkout -- <file>..." to discard changes in working directory)
+#
+#	modified:   bin/update_xml.py
+#	modified:   etc/full_package_installation_metadata_cleanup_config.json
+#	modified:   etc/merge_config.json
+#	modified:   etc/salesforce_metadata_sync_config.json
+#
+# Untracked files:
+#   (use "git add <file>..." to include in what will be committed)
+#
+#	backup/
+#	client_secret.json
+#	etc/salesforce_feature_metadata_cleanup.json
+#	full_package_installation_metadata_cleanup_config.json
+[cloud_user@mopdcy405166 devops-toolkit]$ cat bin/update_xml.py
 #!/usr/bin/env python
 
 # author        : Stepan Ruzicka
@@ -111,16 +135,15 @@ def build_element_unique_key(element, config, namespace, unmatched_element_count
       else:
          # key == element name itself - e.g. userLicense, custom
          key = element_local_name
-   
+
    if(key is None and unmatched_element_count is not None):
      unmatched_element_count = unmatched_element_count + 1
      key = element_local_name + "#" + str(unmatched_element_count)
-  
+
    if key == None:
       print "Not configured: " + element_local_name
    return key
 '''
-
 def build_element_unique_key(element, config, namespace):
    config_missing_count = 0
    # default value
@@ -133,8 +156,13 @@ def build_element_unique_key(element, config, namespace):
             key_element = element.find('{' + namespace  + '}' + uniqueKey)
             if(key_element is not None and key_element.text):
                if key is None:
-                  key = ''
-               key = key + "#" + element_local_name + '#' + key_element.text
+                  key = '#' + element_local_name
+               if ('useParentForPrimaryKey' in element_config):
+                  key = key + "#" + key_element.text.split(element_config['useParentForPrimaryKey'])[0]
+               else:
+                  key = key + "#" + key_element.text
+            elif(key is not None):
+               key = key + '#'
       elif('exclusiveUniqueKeys' in  element_config):
          for exclusiveUniqueKeyList in element_config['exclusiveUniqueKeys']:
             for exlusiveUniqueKey in exclusiveUniqueKeyList:
@@ -205,6 +233,7 @@ def elements_are_equal(element1, element2, config, namespace):
       config = config[element_local_name]
 
    if 'equalKeys' in config and config['equalKeys'] is not None:
+      change = False
       for key in config['equalKeys']:
          #print('--> ' + key + ', ' + element2.find('{' + namespace + '}' + key).text + ', ' + element1.find('{' + namespace + '}' + key).text)
          #print "--->" + key
@@ -213,21 +242,24 @@ def elements_are_equal(element1, element2, config, namespace):
          if(element2_key is not None and element1_key is not None and element2_key.text != element1_key.text):
             print('Updating value: ' + element2_key.text + ' with ' + element1_key.text + ' for element: ' + element_local_name)
             element2_key.text = element1_key.text
-            return False
-      return True
+            change = True
+         elif(element1_key is not None and element2_key is None):
+            element2.insert(0,element1_key)
+            change = True
+      return not change
    else:
-      # leaves
-      #element1_text_temp = element1.text
-      #element1.text = element2.text
-      #return element1_text_temp == element2.text
-      return element1.text == element2.text
+      # it doesn't have keys
+      if (element2.text != element1.text):
+         element2.text = element1.text
+         return False
+      return True
 
 def get_tag(element):
    return element.tag
 
 def sort_xml(tree):
    root = tree.getroot()
-   root[:] = sorted(root, key=get_tag)       
+   root[:] = sorted(root, key=get_tag)
 
 def main():
    parser = argparse.ArgumentParser(description='Merges Salesforce XML files. Currently profiles and custom objects are supported.\n' +
@@ -275,15 +307,15 @@ def main():
 
    # default namespace
    ElementTree.register_namespace('', DEFAULT_NAMESPACE)
-  
+
    # base xml
    base_xml = ElementTree.parse(args.base)
    #base_namespaces = {'default': get_root_namespace(base_xml)}
-      
+
    unmatched_base_element_count = 0
    base_xml_dict = load_base_xml_file(base_xml, merge_type_config, DEFAULT_NAMESPACE, unmatched_base_element_count)
    # print(load_base_xml_file(base_xml, profile_config, base_namespaces))
-      
+
    # update xml
    update_xml = ElementTree.parse(args.update)
    #update_xml_namespaces = {'default': get_root_namespace(update_xml)}
@@ -297,7 +329,7 @@ def main():
 
    sort_xml(base_xml)
    base_xml.write(output_file, encoding="UTF-8", xml_declaration = True)
-   #print(ElementTree.tostring(base_xml.getroot(), encoding='UTF-8'))     
+   #print(ElementTree.tostring(base_xml.getroot(), encoding='UTF-8'))
 
 if __name__ == "__main__":
    main()
