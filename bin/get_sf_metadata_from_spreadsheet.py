@@ -297,14 +297,18 @@ def main():
 
             # retrieve the package
             if args.source:
-               p = Popen(['force-dev-tool', 'retrieve',  '-d', package_xml_path, args.source], stderr=PIPE)
+               p = Popen(['force-dev-tool', 'retrieve',  '-d', package_xml_path, args.source], stdout=PIPE, stderr=PIPE)
             else:
-               p = Popen(['force-dev-tool', 'retrieve',  '-d', package_xml_path, instance], stderr=PIPE)
+               p = Popen(['force-dev-tool', 'retrieve',  '-d', package_xml_path, instance], stdout=PIPE, stderr=PIPE)
  
-            error = p.communicate()[1]
+            stdout,error = p.communicate()[1]
             if error:
                print_error(item + ' ' + error.strip())
+               sys.exit(1)
                break
+
+            if stdout:
+               print stdout
 
             print "Running cleanup of directory " + package_xml_path
             p = Popen([SCRIPT_FOLDER_PATH + '/clean_sf_metadata.py', '-s', package_xml_path])
