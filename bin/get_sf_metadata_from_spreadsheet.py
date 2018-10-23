@@ -301,7 +301,7 @@ def main():
             else:
                p = Popen(['force-dev-tool', 'retrieve',  '-d', package_xml_path, instance], stdout=PIPE, stderr=PIPE)
  
-            stdout,error = p.communicate()[1]
+            stdout,error = p.communicate()
             if error:
                print_error(item + ' ' + error.strip())
                sys.exit(1)
