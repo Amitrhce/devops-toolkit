@@ -125,12 +125,12 @@
       "preprocessing":"off"
    },
    "flowDefinitions":{
-      "synchronization":"off",
+      "synchronization":"on",
       "fileReplace":"on",
       "preprocessing":"off"
    },
   "flows":{
-      "synchronization":"off",
+      "synchronization":"on",
       "fileReplace":"on",
       "preprocessing":"off"
    },
