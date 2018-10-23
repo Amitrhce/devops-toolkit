@@ -129,7 +129,7 @@
       "fileReplace":"on",
       "preprocessing":"off"
    },
-  "flow":{
+  "flows":{
       "synchronization":"on",
       "fileReplace":"on",
       "preprocessing":"off"
@@ -175,16 +175,6 @@
       "preprocessing":"off"
    },
    "flexipages":{
-      "synchronization":"off",
-      "fileReplace":"on",
-      "preprocessing":"off"
-   },
-   "flowDefinitions":{
-      "synchronization":"off",
-      "fileReplace":"on",
-      "preprocessing":"off"
-   },
-   "flows":{
       "synchronization":"off",
       "fileReplace":"on",
       "preprocessing":"off"
